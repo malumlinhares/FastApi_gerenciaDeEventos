@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.patrocinio import PatrocinioCreate, PatrocinioResponse
 from backend.crud.patrocinio import create_patrocinio, get_patrocinio, delete_patrocinio, update_patrocinio 
+from backend.crud.patrocinio import create_patrocinio, get_patrocinio, update_patrocinio, delete_patrocinio
 
 router = APIRouter()
 
@@ -39,3 +40,5 @@ async def delete_patrocinio_api(
         raise HTTPException(status_code=404, detail="Patrocinio não encontrado")
     
     return db_patrocinio
+
+#manipulação em massa

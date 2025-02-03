@@ -51,3 +51,21 @@ async def delete_evento(db:AsyncSession, evento_id: int):
     await db.delete(db_evento)
     await db.commit()
     return db_evento
+
+
+from sqlalchemy import update, delete
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from models.evento import Evento
+from schemas.evento import EventoCreate
+
+async def bulk_create_evento(db: AsyncSession, eventos: list[EventoCreate]):
+    db_eventos = [Evento(**evento.dict()) for evento in eventos]
+    db.add_all(db_eventos)
+    await db.commit()
+    # Atualiza os objetos para garantir dados consistentes
+    for evento in db_eventos:
+        await db.refresh(evento)
+    return db_eventos
+
+

@@ -3,6 +3,7 @@ from models.patrocinio import Patrocinio
 from schemas.patrocinio import PatrocinioCreate
 from sqlalchemy.future import select
 
+
 async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
     db_patrocinio = Patrocinio(
         valor=patrocinio.valor, descricao = patrocinio.descricao, 
@@ -49,3 +50,5 @@ async def delete_patrocinio(db:AsyncSession, patrocinio_id: int):
     await db.commit()
 
     return db_patrocinio
+
+#manipulação em massa
