@@ -1,0 +1,35 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:17
+    restart: "always"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data 
+# Correção no volume
+
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: ProjetoDB
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: "always"
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: 123456
+      MAX_LOGIN_ATTEMPTS: 30
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  postgres_data: {}
