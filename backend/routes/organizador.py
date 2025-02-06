@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.organizador import OrganizadorCreate, OrganizadorResponse
-from backend.crud.organizador import create_organizador, get_organizador, update_organizador, delete_organizador
+from backend.crud.organizador import create_organizador, get_organizador, update_organizador, delete_organizador, bulk_create_organizador
+from typing import List
 
 router = APIRouter()
 
@@ -40,3 +41,14 @@ async def delete_organizador_api(
         raise HTTPException(status_code=404, detail="organizador não encontrado")
     
     return db_organizador
+
+
+@router.post("/bulk", response_model=List[OrganizadorResponse])
+async def bulk_create_organizadores(
+    organizadores: List[OrganizadorCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_organizador(db, organizadores)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

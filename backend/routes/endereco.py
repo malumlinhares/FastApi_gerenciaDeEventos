@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.endereco import EnderecoCreate, EnderecoResponse
-from backend.crud.endereco import create_endereco, get_endereco, update_endereco, delete_endereco
+from backend.crud.endereco import create_endereco, get_endereco, update_endereco, delete_endereco, bulk_create_endereco
+from typing import List
 
 router = APIRouter()
 
@@ -37,3 +38,13 @@ async def delete_endereco_api(
     if db_endereco is None:
         raise HTTPException(status_code=404, detail="Endereço não encontrado")
     return db_endereco
+
+@router.post("/bulk", response_model=List[EnderecoResponse])
+async def bulk_create_enderecos(
+    enderecos: List[EnderecoCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_endereco(db, enderecos)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

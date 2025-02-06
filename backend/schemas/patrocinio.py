@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from typing import List
+
 
 class PatrocinioBase(BaseModel):
     valor: float
@@ -20,3 +22,6 @@ class PatrocinioCreate(BaseModel):  # Para criação do Patrocinio
 
 class PatrocinioResponse(PatrocinioCreate):  # Para a resposta com ID
     id: int
+
+class PatrocinioBulkCreate(BaseModel):  # Para a criação em massa do Patrocinio
+    patrocinios: List[PatrocinioBase]  

@@ -1,18 +1,45 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.patrocinio import Patrocinio
-from schemas.patrocinio import PatrocinioCreate
+from backend.models.patrocinio import Patrocinio
+from backend.schemas.patrocinio import PatrocinioCreate
 from sqlalchemy.future import select
+from sqlalchemy import text
+from sqlalchemy import text
+
+# async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
+#     db_patrocinio = Patrocinio(
+#         valor=patrocinio.valor, descricao = patrocinio.descricao, 
+#         patrocinador_id=patrocinio.patrocinador_id, 
+#         evento_id=patrocinio.evento_id)
+#     db.add(db_patrocinio)
+#     await db.commit()
+#     await db.refresh(db_patrocinio)
+#     return db_patrocinio
 
 
 async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
-    db_patrocinio = Patrocinio(
-        valor=patrocinio.valor, descricao = patrocinio.descricao, 
-        patrocinador_id=patrocinio.patrocinador_id, 
-        evento_id=patrocinio.evento_id)
-    db.add(db_patrocinio)
+    query = text("""
+        INSERT INTO patrocinios (valor, descricao, evento_id, patrocinador_id)
+        VALUES (:valor, :descricao, :evento_id, :patrocinador_id)
+        RETURNING id, valor, descricao, evento_id, patrocinador_id
+    """)
+    params = {
+        "valor": patrocinio.valor,
+        "descricao": patrocinio.descricao,
+        "evento_id": patrocinio.evento_id, 
+        "patrocinador_id": patrocinio.patrocinador_id
+    }
+    result = await db.execute(query, params)
+    row = result.fetchone()
     await db.commit()
-    await db.refresh(db_patrocinio)
-    return db_patrocinio
+    return {
+        "id": row.id,
+        "valor": row.valor,
+        "descricao": row.descricao,
+        "evento_id": row.evento_id, 
+        "patrocinador_id": row.patrocinador_id
+    }
+
+
 
 async def get_patrocinio(db: AsyncSession, patrocinio_id: int):
     # Aqui você faz a consulta para buscar o patrocinio
@@ -52,3 +79,11 @@ async def delete_patrocinio(db:AsyncSession, patrocinio_id: int):
     return db_patrocinio
 
 #manipulação em massa
+async def bulk_create_patrocinio(db: AsyncSession, patrocinios: list[PatrocinioCreate]):
+    db_patrocinios = [Patrocinio(**patrocinio.model_dump()) for patrocinio in patrocinios]
+    db.add_all(db_patrocinios)
+    await db.commit()
+    # Atualiza os objetos para garantir dados consistentes
+    for patrocinio in db_patrocinios:
+        await db.refresh(patrocinio)
+    return db_patrocinios

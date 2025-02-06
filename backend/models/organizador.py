@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from config.database import Base
+from backend.config.database import Base
 
 class Organizador(Base):
     __tablename__ = 'organizadores'
@@ -11,5 +11,5 @@ class Organizador(Base):
     cnpj = Column(String, index=True)
     
     # Relacionamento de volta para Evento (lado "um")
-    evento = relationship("Evento", back_populates="organizador", cascade="all, delete-orphan")  # uselist=False para garantir um único evento por organizador
+    evento = relationship("Evento", back_populates="organizador")  # uselist=False para garantir um único evento por organizador
 

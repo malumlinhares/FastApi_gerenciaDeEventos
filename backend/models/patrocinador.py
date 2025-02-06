@@ -1,10 +1,15 @@
 # backend/models/patrocinador.py
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import relationship
-from config.database import Base
+from backend.config.database import Base
 import enum
 
-# Enum corrigido: Herdando de str para evitar problemas no PostgreSQL
+# backend/models/patrocinador.py
+from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy.orm import relationship
+from backend.config.database import Base
+import enum
+
 class TipoPatrocinador(str, enum.Enum):
     publico = "publico"
     privado = "privado"
@@ -15,12 +20,12 @@ class Patrocinador(Base):
     id = Column(Integer, primary_key=True)
     nome = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    tipo = Column(Enum(TipoPatrocinador, name="tipo_patrocinador", create_type=True), nullable=False)  # Enum correto
+    tipo = Column(Enum(TipoPatrocinador, name="tipo_patrocinador", create_type=True), nullable=False)
     orgao_responsavel = Column(String, nullable=True)
-    responsavel_comercial = Column(String, nullable=True)  # Somente preenchido para patrocinadores do tipo "privado"
+    responsavel_comercial = Column(String, nullable=True)  # Apenas para patrocinadores privados
     
-    # Relacionamento com Patrocínio (0, n)
-    patrocinio = relationship("Patrocinio", back_populates="patrocinador")
+    # Relacionamento N:M com Eventos via Patrocinios
+    patrocinios = relationship("Patrocinio", back_populates="patrocinador")
 
     __mapper_args__ = {
         'polymorphic_on': tipo,

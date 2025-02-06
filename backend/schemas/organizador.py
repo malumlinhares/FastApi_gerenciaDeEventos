@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class OrganizadorBase(BaseModel):
     nome: str
@@ -18,3 +19,9 @@ class OrganizadorCreate(BaseModel):  # Para criação do Organizador
 
 class OrganizadorResponse(OrganizadorCreate):  # Para a resposta com ID
     id: int
+    nome: str
+    email: str 
+    cnpj: str 
+
+class OrganizadorBulkCreate(BaseModel):  # Para a criação em massa do Organizador
+    organizadores: List[OrganizadorBase]  

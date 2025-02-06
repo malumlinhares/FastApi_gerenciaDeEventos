@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class PrivilegioVipBase(BaseModel):
     privilegio_id: int
@@ -16,3 +17,8 @@ class PrivilegioVipCreate(PrivilegioVipBase):  # Para criação do privilégio V
 
 class PrivilegioVipResponse(PrivilegioVipBase):  # Para a resposta com ID
     id: int
+    privilegio_id: int
+    participante_id: int
+
+class PrivilegioVipBulkCreate(BaseModel):  # Para a criação em massa do PrivilegioVip
+    privilegios_vips: List[PrivilegioVipBase]  

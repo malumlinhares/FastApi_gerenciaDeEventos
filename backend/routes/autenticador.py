@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.autenticador import AutenticadorCreate, AutenticadorResponse
-from backend.crud.autenticador import create_autenticador, get_autenticador, update_autenticador, delete_autenticador
+from backend.crud.autenticador import create_autenticador, get_autenticador, update_autenticador, delete_autenticador, bulk_create_autenticador
+from typing import List
 
 router = APIRouter()
 
@@ -37,3 +38,14 @@ async def delete_autenticador_api(
     if db_autenticador is None:
         raise HTTPException(status_code=404, detail="Autenticador não encontrado")
     return db_autenticador
+
+# Operações em massa
+@router.post("/bulk", response_model=List[AutenticadorResponse])
+async def bulk_create_autenticadores(
+    autenticadores: List[AutenticadorCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_autenticador(db, autenticadores)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

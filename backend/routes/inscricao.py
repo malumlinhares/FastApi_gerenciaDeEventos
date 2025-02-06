@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.inscricao import InscricaoCreate, InscricaoResponse
-from backend.crud.inscricao import create_inscricao, get_inscricao, update_inscricao, delete_inscricao
+from backend.crud.inscricao import create_inscricao, get_inscricao, update_inscricao, delete_inscricao, bulk_create_inscricao
+from typing import List
 
 router = APIRouter()
 
@@ -37,3 +38,13 @@ async def delete_inscricao_api(
     if db_inscricao is None:
         raise HTTPException(status_code=404, detail="Inscrição não encontrada")
     return db_inscricao
+
+@router.post("/bulk", response_model=List[InscricaoResponse])
+async def bulk_create_inscricoes(
+    inscricoes: List[InscricaoCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_inscricao(db, inscricoes)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

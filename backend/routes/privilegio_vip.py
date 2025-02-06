@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.privilegio_vip import PrivilegioVipCreate, PrivilegioVipResponse
-from backend.crud.privilegio_vip import create_privilegio_vip, get_privilegio_vip, update_privilegio_vip, delete_privilegio_vip
+from backend.crud.privilegio_vip import create_privilegio_vip, get_privilegio_vip, update_privilegio_vip, delete_privilegio_vip, bulk_create_privilegios_vip
+from typing import List
 
 router = APIRouter()
 
@@ -37,3 +38,14 @@ async def delete_privilegio_vip_api(
     if db_privilegio_vip is None:
         raise HTTPException(status_code=404, detail="Privilégio VIP não encontrado")
     return db_privilegio_vip
+
+
+@router.post("/bulk", response_model=List[PrivilegioVipResponse])
+async def bulk_create_privilegios_vip(
+    privilegios_vip: List[PrivilegioVipCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_privilegios_vip(db, privilegios_vip)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

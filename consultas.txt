@@ -1,0 +1,178 @@
+----------------------------
+-- Criação das Tabelas e Relacionamentos
+----------------------------
+
+-- Autenticador
+CREATE TABLE Autenticador (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    orgao TEXT NOT NULL
+);
+
+-- Certificado
+CREATE TABLE Certificado (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    evento_id INTEGER NOT NULL,
+    participante_id INTEGER NOT NULL,
+    autenticador_id INTEGER NOT NULL,
+    FOREIGN KEY (evento_id) REFERENCES Evento(id),
+    FOREIGN KEY (participante_id) REFERENCES Participante(id),
+    FOREIGN KEY (autenticador_id) REFERENCES Autenticador(id)
+);
+
+-- Endereco
+CREATE TABLE Endereco (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rua TEXT NOT NULL,
+    cep TEXT NOT NULL,
+    numero TEXT NOT NULL,
+    participante_id INTEGER NOT NULL,
+    FOREIGN KEY (participante_id) REFERENCES Participante(id)
+);
+
+-- Evento
+CREATE TABLE Evento (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    categoria TEXT NOT NULL,
+    data DATE NOT NULL,
+    numerohoras INTEGER NOT NULL,
+    local_id INTEGER NOT NULL,
+    organizador_id INTEGER NOT NULL,
+    FOREIGN KEY (local_id) REFERENCES Local(id),
+    FOREIGN KEY (organizador_id) REFERENCES Organizador(id)
+);
+
+-- Inscricao
+CREATE TABLE Inscricao (
+    numero_inscricao INTEGER PRIMARY KEY AUTOINCREMENT,
+    status TEXT NOT NULL,
+    forma_pagamento TEXT NOT NULL,
+    valor REAL NOT NULL,
+    participante_id INTEGER NOT NULL,
+    FOREIGN KEY (participante_id) REFERENCES Participante(id)
+);
+
+-- Local
+CREATE TABLE Local (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    cidade TEXT NOT NULL,
+    capacidade INTEGER NOT NULL,
+    nome TEXT NOT NULL
+);
+
+-- Organizador
+CREATE TABLE Organizador (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL,
+    cnpj TEXT NOT NULL UNIQUE
+);
+
+-- Participante
+CREATE TABLE Participante (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    tipo TEXT CHECK(tipo IN ('COMUM', 'VIP')) NOT NULL,
+    anuidade REAL,
+    elegivel_upgrade BOOLEAN
+);
+
+-- Patrocinador
+CREATE TABLE Patrocinador (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL,
+    tipo TEXT CHECK(tipo IN ('OFICIAL', 'APOIO')) NOT NULL,
+    orgao_responsavel TEXT,
+    responsavel_comercial TEXT
+);
+
+-- Patrocinio
+CREATE TABLE Patrocinio (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    valor REAL NOT NULL,
+    descricao TEXT,
+    patrocinador_id INTEGER NOT NULL,
+    evento_id INTEGER NOT NULL,
+    FOREIGN KEY (patrocinador_id) REFERENCES Patrocinador(id),
+    FOREIGN KEY (evento_id) REFERENCES Evento(id)
+);
+
+-- Privilegio
+CREATE TABLE Privilegio (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    descricao TEXT
+);
+
+-- PrivilegioVip
+CREATE TABLE PrivilegioVip (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    privilegio_id INTEGER NOT NULL,
+    participante_id INTEGER NOT NULL,
+    FOREIGN KEY (privilegio_id) REFERENCES Privilegio(id),
+    FOREIGN KEY (participante_id) REFERENCES Participante(id)
+);
+
+----------------------------
+-- Operações Básicas (CRUD)
+----------------------------
+
+-- Criação (Create)
+INSERT INTO Autenticador (orgao) VALUES ('Ministério da Educação');
+
+-- Leitura (Read)
+SELECT * FROM Autenticador WHERE id = 1;
+
+-- Atualização (Update)
+UPDATE Autenticador SET orgao = 'Ministério da Cultura' WHERE id = 1;
+
+-- Exclusão (Delete)
+DELETE FROM Autenticador WHERE id = 1;
+
+----------------------------
+-- Consultas Avançadas
+----------------------------
+
+-- 1. Contagem de Certificados por Participante
+SELECT participante_id, COUNT(id) AS total_certificados
+FROM Certificado
+GROUP BY participante_id;
+
+-- 2. Participantes com Certificados (INNER JOIN)
+SELECT p.*, c.id AS certificado_id
+FROM Participante p
+INNER JOIN Certificado c ON p.id = c.participante_id;
+
+-- 3. Todos os Participantes com Certificados (LEFT JOIN)
+SELECT p.*, c.id AS certificado_id
+FROM Participante p
+LEFT JOIN Certificado c ON p.id = c.participante_id;
+
+-- 4. Busca de Patrocinadores por Substring
+SELECT * FROM Patrocinador 
+WHERE nome LIKE '%tecnologia%';
+
+-- 5. Total de Patrocínios por Evento
+SELECT e.nome AS evento, SUM(p.valor) AS total_patrocinado
+FROM Evento e
+INNER JOIN Patrocinio p ON e.id = p.evento_id
+GROUP BY e.id;
+
+-- 6. Participantes VIP com Privilégios
+SELECT p.nome, pv.id AS privilegio_id
+FROM Participante p
+INNER JOIN PrivilegioVip pv ON p.id = pv.participante_id
+WHERE p.tipo = 'VIP';
+
+-- 7. Eventos com Capacidade Disponível
+SELECT e.nome, l.capacidade - COUNT(i.numero_inscricao) AS vagas_restantes
+FROM Evento e
+INNER JOIN Local l ON e.local_id = l.id
+LEFT JOIN Inscricao i ON e.id = i.evento_id
+GROUP BY e.id;
+
+-- 8. Média de Valores de Inscrição
+SELECT AVG(valor) AS media_valor_inscricao
+FROM Inscricao;

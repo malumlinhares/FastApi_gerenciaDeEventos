@@ -1,5 +1,5 @@
 from pydantic import BaseModel, field_validator, ConfigDict
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 
 # Definição do Enum compatível com o banco de dados
@@ -36,3 +36,8 @@ class PatrocinadorCreate(PatrocinadorBase):  # Para criação do patrocinador
 
 class PatrocinadorResponse(PatrocinadorCreate):  # Para a resposta com ID
     id: int
+
+
+
+class PatrocinadorBulkCreate(BaseModel):  # Para a criação em massa do Patrocinador
+    patrocinadores: List[PatrocinadorBase]  

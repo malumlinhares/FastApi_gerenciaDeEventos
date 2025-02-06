@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.patrocinador import PatrocinadorCreate, PatrocinadorResponse
-from backend.crud.patrocinador import create_patrocinador, get_patrocinador, delete_patrocinador, update_patrocinador 
+from backend.crud.patrocinador import create_patrocinador, get_patrocinador, delete_patrocinador, update_patrocinador, bulk_create_patrocinador, search_patrocinador_by_name
+from typing import List
 
 router = APIRouter()
 
@@ -40,3 +41,23 @@ async def delete_patrocinador_api(
         raise HTTPException(status_code=404, detail="Patrocinador não encontrado")
     
     return db_patrocinador
+
+@router.post("/bulk", response_model=List[PatrocinadorResponse])
+async def bulk_create_patrocinadores(
+    patrocinadores: List[PatrocinadorCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_patrocinador(db, patrocinadores)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+
+# Nova rota para buscar patrocinadores por substring no nome
+@router.get("/search/", response_model=List[PatrocinadorResponse])
+async def search_patrocinador_api(nome_substring: str, db: AsyncSession = Depends(get_db)):
+    # Busca por nome que contém a substring
+    db_patrocinadores = await search_patrocinador_by_name(db=db, nome_substring=nome_substring)
+    if not db_patrocinadores:
+        raise HTTPException(status_code=404, detail="Patrocinadores não encontrados")
+    return db_patrocinadores

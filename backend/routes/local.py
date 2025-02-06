@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.local import LocalCreate, LocalResponse
-from backend.crud.local import create_local, get_local, update_local, delete_local
+from backend.crud.local import create_local, get_local, update_local, delete_local, bulk_create_local
+from typing import List
 
 router = APIRouter()
 
@@ -40,3 +41,13 @@ async def delete_local_api(
         raise HTTPException(status_code=404, detail="local não encontrado")
     
     return db_local
+
+@router.post("/bulk", response_model=List[LocalResponse])
+async def bulk_create_locais(
+    locais: List[LocalCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_local(db, locais)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

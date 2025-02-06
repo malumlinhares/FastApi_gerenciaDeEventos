@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.patrocinio import PatrocinioCreate, PatrocinioResponse
-from backend.crud.patrocinio import create_patrocinio, get_patrocinio, delete_patrocinio, update_patrocinio 
-from backend.crud.patrocinio import create_patrocinio, get_patrocinio, update_patrocinio, delete_patrocinio
+from backend.crud.patrocinio import create_patrocinio, get_patrocinio, delete_patrocinio, update_patrocinio, bulk_create_patrocinio
+from typing import List
 
 router = APIRouter()
 
@@ -42,3 +42,12 @@ async def delete_patrocinio_api(
     return db_patrocinio
 
 #manipulação em massa
+@router.post("/bulk", response_model=List[PatrocinioResponse])
+async def bulk_create_patrocinios(
+    patrocinios: List[PatrocinioCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_patrocinio(db, patrocinios)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

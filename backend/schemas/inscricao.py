@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class InscricaoBase(BaseModel):
     status: str
@@ -20,3 +21,10 @@ class InscricaoCreate(InscricaoBase):  # Para criação da inscrição
 
 class InscricaoResponse(InscricaoBase):  # Para a resposta com ID
     numero_inscricao: int
+    status: str
+    forma_pagamento: str
+    valor: int
+    participante_id: int
+
+class InscricaoBulkCreate(BaseModel):  # Para a criação em massa do Inscricao
+    inscricoes: List[InscricaoBase]  

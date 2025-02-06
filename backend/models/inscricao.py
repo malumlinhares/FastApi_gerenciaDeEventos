@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from config.database import Base  
+from backend.config.database import Base  
 
 class Inscricao(Base):
     __tablename__ = 'inscricao'
@@ -9,7 +9,7 @@ class Inscricao(Base):
     status = Column(String, index=True)
     forma_pagamento = Column(String, index=True)
     valor = Column(Float, index=True)
-    participante_id = Column(Integer, ForeignKey("participantes.id", ondelete="CASCADE"), nullable=False)
+    participante_id = Column(Integer, ForeignKey("participantes.id"),  nullable=False)
 
-    participante = relationship("Participante", back_populates="inscricao",single_parent=True)
+    participante = relationship("Participante", back_populates="inscricao", cascade="all, delete")
 

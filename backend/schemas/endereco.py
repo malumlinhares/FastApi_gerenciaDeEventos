@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class EnderecoBase(BaseModel):
     rua: str
@@ -20,3 +21,6 @@ class EnderecoCreate(EnderecoBase):  # Para criação do endereço
 
 class EnderecoResponse(EnderecoBase):  # Para a resposta com ID
     id: int
+
+class EnderecoBulkCreate(BaseModel):  # Para a criação em massa do Endereco
+    endercos: List[EnderecoBase]  

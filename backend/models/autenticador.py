@@ -1,12 +1,12 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
-from config.database import Base
+from backend.config.database import Base
 
 class Autenticador(Base):
     __tablename__ = "autenticadores"
 
     id = Column(Integer, primary_key=True)
-    orgao = Column(String, nullable=False)
+    orgao = Column(String, nullable=False)  # Obrigatório ter um órgão
 
-    # Relacionamento 1:N com Certificado
-    certificado = relationship("Certificado", back_populates="autenticador")
+    # Relacionamento com Certificado
+    certificado = relationship("Certificado", back_populates="autenticador", cascade="all, delete-orphan")

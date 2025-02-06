@@ -1,6 +1,7 @@
+# backend/models/evento.py
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
-from config.database import Base
+from backend.config.database import Base
 
 class Evento(Base):
     __tablename__ = 'eventos'
@@ -10,12 +11,15 @@ class Evento(Base):
     categoria = Column(String, index=True)
     data = Column(Date, index=True)
     numerohoras = Column(Integer, index=True)
-    organizador_id = Column(Integer, ForeignKey("organizadores.id", ondelete="CASCADE"), nullable=False)
-    
-    # Relacionamento com Local (se o local for excluído, o evento também será)
-    local = relationship("Local", back_populates="evento", cascade="all, delete-orphan")
-    patrocinio = relationship("Patrocinio", back_populates="evento", cascade="all, delete-orphan")
 
-    # Relacionamento com Organizador
-    organizador = relationship("Organizador", back_populates="evento")  # Alterado para "eventos"
-    certificado = relationship("Certificado", back_populates="evento", cascade="all, delete-orphan")
+    local_id = Column(Integer, ForeignKey("locais.id"), nullable=False)
+    local = relationship("Local", back_populates="eventos")
+
+    organizador_id = Column(Integer, ForeignKey("organizadores.id"), nullable=False)
+    organizador = relationship("Organizador", back_populates="eventos")
+
+    # Relacionamento N:M com Patrocinadores via Patrocinios
+    patrocinios = relationship("Patrocinio", back_populates="evento")
+
+    # Relacionamento N:M com Participantes via Certificados
+    certificados = relationship("Certificado", back_populates="evento")

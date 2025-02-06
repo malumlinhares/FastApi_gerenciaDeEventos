@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.participante import ParticipanteCreate, ParticipanteResponse
-from backend.crud.participante import create_participante, get_participante, update_participante, delete_participante
+from backend.crud.participante import create_participante, get_participante, update_participante, delete_participante, bulk_create_participante, get_participantes_com_certificados_inner_join, get_participantes_com_certificados_left_join
+from typing import List, Dict
 
 router = APIRouter()
 
@@ -37,3 +38,28 @@ async def delete_participante_api(
     if db_participante is None:
         raise HTTPException(status_code=404, detail="Participante não encontrado")
     return db_participante
+
+
+@router.post("/bulk", response_model=List[ParticipanteResponse])
+async def bulk_create_participantes(
+    participantes: List[ParticipanteCreate], 
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        return await bulk_create_participante(db, participantes)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.get("/participantes/com-certificados-inner", response_model=List[ParticipanteResponse])
+async def read_participantes_com_certificados_inner(db: AsyncSession = Depends(get_db)):
+    """
+    Retorna todos os participantes que possuem certificados (INNER JOIN).
+    """
+    return await get_participantes_com_certificados_inner_join(db)
+
+@router.get("/participantes/com-certificados-left", response_model=List[ParticipanteResponse])
+async def read_participantes_com_certificados_left(db: AsyncSession = Depends(get_db)):
+    """
+    Retorna todos os participantes, incluindo aqueles sem certificados (LEFT JOIN).
+    """
+    return await get_participantes_com_certificados_left_join(db)

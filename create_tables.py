@@ -1,19 +1,19 @@
 import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
-from config.database import Base  # Certifique-se de que Base está sendo importado corretamente
-from models.patrocinador import Patrocinador  # Importando os modelos
-from models.evento import Evento
-from models.organizador import Organizador
-from models.local import Local
-from models.participante import Participante
-from models.autenticador import Autenticador
-from models.certificado import Certificado
-from models.endereco import Endereco
-from models.inscricao import Inscricao
-from models.patrocinio import Patrocinio
-from models.privilegio_vip import PrivilegioVip
-from models.privilegio import Privilegio
+from backend.config.database import Base  # Certifique-se de que Base está sendo importado corretamente
+from backend.models.patrocinador import Patrocinador  # Importando os modelos
+from backend.models.evento import Evento
+from backend.models.organizador import Organizador
+from backend.models.local import Local
+from backend.models.participante import Participante
+from backend.models.autenticador import Autenticador
+from backend.models.certificado import Certificado
+from backend.models.endereco import Endereco
+from backend.models.inscricao import Inscricao
+from backend.models.patrocinio import Patrocinio
+from backend.models.privilegio_vip import PrivilegioVip
+from backend.models.privilegio import Privilegio
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Configuração do banco de dados
