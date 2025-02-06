@@ -16,4 +16,4 @@ class PrivilegioVip(Base):
 
     privilegio = relationship("Privilegio", back_populates="privilegio_vip")
 
-    participante = relationship("Participante", back_populates="privilegio_vip", cascade="all, delete")
+    participante = relationship("Participante", back_populates="privilegios_vip", cascade="all, delete")

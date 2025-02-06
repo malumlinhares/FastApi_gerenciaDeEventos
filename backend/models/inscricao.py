@@ -11,5 +11,5 @@ class Inscricao(Base):
     valor = Column(Float, index=True)
     participante_id = Column(Integer, ForeignKey("participantes.id"),  nullable=False)
 
-    participante = relationship("Participante", back_populates="inscricao", cascade="all, delete")
+    participante = relationship("Participante", back_populates="inscricao")
 

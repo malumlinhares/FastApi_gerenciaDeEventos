@@ -12,4 +12,4 @@ class Endereco(Base):
 
     # Chave estrangeira para Participante (1:1)
     participante_id = Column(Integer, ForeignKey("participantes.id", ondelete="CASCADE"), unique=True, nullable=False)
-    participante = relationship("Participante", back_populates="endereco")
+    participante = relationship("Participante", back_populates="endereco", uselist=False)
