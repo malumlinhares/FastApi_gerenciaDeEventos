@@ -51,12 +51,12 @@ async def bulk_create_patrocinadores(
         return await bulk_create_patrocinador(db, patrocinadores)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 
 # Nova rota para buscar patrocinadores por substring no nome
 @router.get("/search/", response_model=List[PatrocinadorResponse])
 async def search_patrocinador_api(nome_substring: str, db: AsyncSession = Depends(get_db)):
-    # Busca por nome que contém a substring
+
     db_patrocinadores = await search_patrocinador_by_name(db=db, nome_substring=nome_substring)
     if not db_patrocinadores:
         raise HTTPException(status_code=404, detail="Patrocinadores não encontrados")

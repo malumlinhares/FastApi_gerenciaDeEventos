@@ -18,9 +18,10 @@ class Participante(Base):
     elegivel_upgrade = Column(Integer, nullable=False)
 
     # Relacionamento N:M com Eventos por meio da tabela Certificados
-    certificados = relationship("Certificado", back_populates="participante", cascade="all, delete")
+    certificado = relationship("Certificado", back_populates="participante", cascade="all, delete")
     #1:1
     endereco = relationship("Endereco", back_populates="participante", uselist=False)
 
-    inscricoes = relationship("Inscricao", back_populates="participante", cascade="all, delete-orphan")  # Um participante tem várias inscrições
-    privilegios_vip = relationship("PrivilegioVIP", back_populates="participante")  # Um participante pode ter 0 ou N privilégios VIP
+    inscricao = relationship("Inscricao", back_populates="participante", cascade="all, delete-orphan")  # Um participante tem várias inscrições
+
+    # privilegio_vip = relationship("PrivilegioVIP", back_populates="participante")  # Um participante pode ter 0 ou N privilégios VIP

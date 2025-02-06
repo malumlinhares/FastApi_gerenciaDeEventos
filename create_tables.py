@@ -12,8 +12,6 @@ from backend.models.certificado import Certificado
 from backend.models.endereco import Endereco
 from backend.models.inscricao import Inscricao
 from backend.models.patrocinio import Patrocinio
-from backend.models.privilegio_vip import PrivilegioVip
-from backend.models.privilegio import Privilegio
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Configuração do banco de dados

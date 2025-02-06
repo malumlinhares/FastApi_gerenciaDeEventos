@@ -15,5 +15,5 @@ class Patrocinio(Base):
     patrocinador_id = Column(Integer, ForeignKey("patrocinadores.id", ondelete="CASCADE"), nullable=False)
 
     # Relacionamentos
-    evento = relationship("Evento", back_populates="patrocinios")
-    patrocinador = relationship("Patrocinador", back_populates="patrocinios")
+    evento = relationship("Evento", back_populates="patrocinio")
+    patrocinador = relationship("Patrocinador", back_populates="patrocinio")

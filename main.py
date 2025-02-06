@@ -5,7 +5,7 @@ from backend.config.database import create_tables, test_connection
 from backend.routes import (
     patrocinador, organizador, local, evento, patrocinio,
     autenticador, certificado, endereco, inscricao,
-    participante, privilegio_vip, privilegio
+    participante
 )
 from contextlib import asynccontextmanager
 
@@ -69,8 +69,8 @@ app.include_router(certificado.router, prefix="/certificados", tags=["Certificad
 app.include_router(endereco.router, prefix="/enderecos", tags=["Endereços"])
 app.include_router(inscricao.router, prefix="/inscricoes", tags=["Inscrições"])
 app.include_router(participante.router, prefix="/participantes", tags=["Participantes"])
-app.include_router(privilegio.router, prefix="/privilegios", tags=["Privilégios"])
-app.include_router(privilegio_vip.router, prefix="/privilegios_vip", tags=["Privilégios VIP"])
+# app.include_router(privilegio.router, prefix="/privilegios", tags=["Privilégios"])
+# app.include_router(privilegio_vip.router, prefix="/privilegios_vip", tags=["Privilégios VIP"])
 
 @app.get("/")
 async def root():

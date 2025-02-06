@@ -13,13 +13,13 @@ class Evento(Base):
     numerohoras = Column(Integer, index=True)
 
     local_id = Column(Integer, ForeignKey("locais.id"), nullable=False)
-    local = relationship("Local", back_populates="eventos")
+    local = relationship("Local", back_populates="evento")
 
     organizador_id = Column(Integer, ForeignKey("organizadores.id"), nullable=False)
-    organizador = relationship("Organizador", back_populates="eventos")
+    organizador = relationship("Organizador", back_populates="evento")
 
     # Relacionamento N:M com Patrocinadores via Patrocinios
-    patrocinios = relationship("Patrocinio", back_populates="evento")
+    patrocinio = relationship("Patrocinio", back_populates="evento")
 
     # Relacionamento N:M com Participantes via Certificados
-    certificados = relationship("Certificado", back_populates="evento")
+    certificado = relationship("Certificado", back_populates="evento")

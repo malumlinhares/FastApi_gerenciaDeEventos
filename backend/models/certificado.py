@@ -14,6 +14,6 @@ class Certificado(Base):
     autenticador_id = Column(Integer, ForeignKey("autenticadores.id"), nullable=True)  # Pode ser nulo se não tiver autenticador
 
     # Relacionamentos
-    evento = relationship("Evento", back_populates="certificados")
-    participante = relationship("Participante", back_populates="certificados")
-    autenticador = relationship("Autenticador", back_populates="certificados", uselist=False)  # Cada certificado pode ter um autenticador
+    evento = relationship("Evento", back_populates="certificado")
+    participante = relationship("Participante", back_populates="certificado")
+    autenticador = relationship("Autenticador", back_populates="certificado", uselist=False)  # Cada certificado pode ter um autenticador

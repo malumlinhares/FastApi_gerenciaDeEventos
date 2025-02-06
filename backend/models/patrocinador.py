@@ -25,7 +25,7 @@ class Patrocinador(Base):
     responsavel_comercial = Column(String, nullable=True)  # Apenas para patrocinadores privados
     
     # Relacionamento N:M com Eventos via Patrocinios
-    patrocinios = relationship("Patrocinio", back_populates="patrocinador")
+    patrocinio = relationship("Patrocinio", back_populates="patrocinador")
 
     __mapper_args__ = {
         'polymorphic_on': tipo,

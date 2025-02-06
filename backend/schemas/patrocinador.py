@@ -36,8 +36,14 @@ class PatrocinadorCreate(PatrocinadorBase):  # Para criação do patrocinador
 
 class PatrocinadorResponse(PatrocinadorCreate):  # Para a resposta com ID
     id: int
+    nome: str
+    email: str
+    tipo: TipoPatrocinador  # Usa o Enum ao invés de str
+    orgao_responsavel: str
+    responsavel_comercial: str
 
 
 
 class PatrocinadorBulkCreate(BaseModel):  # Para a criação em massa do Patrocinador
     patrocinadores: List[PatrocinadorBase]  
+    
