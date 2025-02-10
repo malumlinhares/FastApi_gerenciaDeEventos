@@ -28,8 +28,8 @@ async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
             "descricao": patrocinio.descricao,
             "evento_id": patrocinio.evento_id, 
             "patrocinador_id": patrocinio.patrocinador_id,
-            "status": patrocinio.status,  # Novo campo opcional
-            "observacao": patrocinio.observacao  # Novo campo opcional
+            "status": patrocinio.status, 
+            "observacao": patrocinio.observacao  
         }
         result = await db.execute(query, params)
         row = result.fetchone()
@@ -41,18 +41,17 @@ async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
             "descricao": row.descricao,
             "evento_id": row.evento_id, 
             "patrocinador_id": row.patrocinador_id,
-            "status": row.status,  # Novo campo opcional
-            "observacao": row.observacao  # Novo campo opcional
+            "status": row.status,  
+            "observacao": row.observacao  
         }
 
     except Exception as e:
-        await db.rollback()  # Reverte a transação em caso de erro
-        raise e  # Levanta a exceção para ser tratada em nível superior
+        await db.rollback()  
+        raise e  
 
 
 
 async def get_patrocinio(db: AsyncSession, patrocinio_id: int):
-    # Aqui você faz a consulta para buscar o patrocinio
     result = await db.execute(
         select(Patrocinio).filter(Patrocinio.id == patrocinio_id)
     )
@@ -90,12 +89,10 @@ async def delete_patrocinio(db:AsyncSession, patrocinio_id: int):
 
     return db_patrocinio
 
-#manipulação em massa
 async def bulk_create_patrocinio(db: AsyncSession, patrocinios: list[PatrocinioCreate]):
     db_patrocinios = [Patrocinio(**patrocinio.model_dump()) for patrocinio in patrocinios]
     db.add_all(db_patrocinios)
     await db.commit()
-    # Atualiza os objetos para garantir dados consistentes
     for patrocinio in db_patrocinios:
         await db.refresh(patrocinio)
     return db_patrocinios

@@ -66,9 +66,6 @@ async def read_participantes_com_certificados_left(db: AsyncSession = Depends(ge
 
 @router.get("/participantes/ordenados", response_model=List[ParticipanteResponse])
 async def read_participantes_ordenados(db: AsyncSession = Depends(get_db), ordem: str = 'ASC'):
-    """
-    Retorna todos os participantes ordenados pelo nome, permitindo a escolha da ordenação (ascendente ou descendente).
-    """
     return await get_participantes_ordenados(db, ordem)
 
 from backend.schemas.endereco import EnderecoCreate

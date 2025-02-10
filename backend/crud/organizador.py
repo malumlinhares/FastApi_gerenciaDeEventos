@@ -27,8 +27,8 @@ async def create_organizador(db: AsyncSession, organizador: OrganizadorCreate):
             "nome": organizador.nome,
             "email": organizador.email,
             "cnpj": organizador.cnpj,
-            "telefone": organizador.telefone,  # Campo opcional
-            "nome_contato": organizador.nome_contato   # Campo opcional
+            "telefone": organizador.telefone,  
+            "nome_contato": organizador.nome_contato  
         }
         
         result = await db.execute(query, params)
@@ -40,14 +40,12 @@ async def create_organizador(db: AsyncSession, organizador: OrganizadorCreate):
             "nome": row.nome,
             "email": row.email,
             "cnpj": row.cnpj,
-            "telefone": row.telefone,  # Retorno do campo opcional
-            "nome_contato": row.nome_contato   # Retorno do campo opcional
+            "telefone": row.telefone,  
+            "nome_contato": row.nome_contato   
         }
-
     except Exception as e:
-        await db.rollback()  # Reverte a transação em caso de erro
-        raise e  # Levanta a exceção para ser tratada em nível superior
-
+        await db.rollback() 
+        raise e  
 
 async def get_organizador(db: AsyncSession, organizador_id: int):
     result = await db.execute(
@@ -91,7 +89,6 @@ async def bulk_create_organizador(db: AsyncSession, organizadores: list[Organiza
     db_organizadores = [Organizador(**organizador.model_dump()) for organizador in organizadores]
     db.add_all(db_organizadores)
     await db.commit()
-    # Atualiza os objetos para garantir dados consistentes
     for organizador in db_organizadores:
         await db.refresh(organizador)
     return db_organizadores

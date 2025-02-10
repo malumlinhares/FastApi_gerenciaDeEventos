@@ -32,8 +32,8 @@ async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate
             }
         )
 
-        row = result.fetchone()  # Captura o resultado da consulta
-        await db.commit()  # Confirma a transação
+        row = result.fetchone()  
+        await db.commit()  
         return {
             "id": row.id,
             "chave_autenticacao": row.chave_autenticacao,
@@ -43,8 +43,8 @@ async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate
         }
 
     except Exception as e:
-        await db.rollback()  # Reverte a transação em caso de falha
-        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
+        await db.rollback()  
+        raise e  
 
 
 async def get_autenticador(db: AsyncSession, autenticador_id: int):
@@ -78,7 +78,6 @@ async def bulk_create_autenticador(db: AsyncSession, autenticadores: list[Autent
     db_autenticadores = [Autenticador(**autenticador.model_dump()) for autenticador in autenticadores]
     db.add_all(db_autenticadores)
     await db.commit()
-    # Atualiza os objetos para garantir dados consistentes
     for autenticador in db_autenticadores:
         await db.refresh(autenticador)
     return db_autenticadores

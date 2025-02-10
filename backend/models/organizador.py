@@ -9,12 +9,8 @@ class Organizador(Base):
     nome = Column(String, index=True, nullable=False)
     email = Column(String, index=True, nullable=False, unique=True)
     cnpj = Column(String, index=True, nullable=False, unique=True)
-    
-    # 2 atributos opcionais
-    telefone = Column(String, nullable=True)  # Atributo opcional
-    nome_contato = Column(String, nullable=True)  # Atributo opcional
+    telefone = Column(String, nullable=True)  
+    nome_contato = Column(String, nullable=True)  
 
-    
-    # Relacionamento de volta para Evento (lado "um")
-    evento = relationship("Evento", back_populates="organizador")  # uselist=False para garantir um único evento por organizador
+    evento = relationship("Evento", back_populates="organizador")  
 

@@ -14,18 +14,14 @@ class Participante(Base):
     id = Column(Integer, primary_key=True)
     nome = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
-    tipo = Column(String, nullable=False)  # Pode ser 'vip', 'padrao' 
+    tipo = Column(String, nullable=False)  
     anuidade = Column(Integer, nullable=True)
     elegivel_upgrade = Column(Integer, nullable=False)
-    
-
     endereco_id = Column(Integer, ForeignKey('enderecos.id', ondelete="CASCADE"), unique=True)
-    endereco = relationship("Endereco", back_populates="participante", uselist=False)  # uselist=False garante a relação 1:1
-    # Campos opcionais adicionados
-    telefone = Column(String, nullable=True)  # Campo opcional
-    responsavel = Column(String, nullable=True)  # Campo opcional
+    telefone = Column(String, nullable=True)  
+    responsavel = Column(String, nullable=True) 
 
-    # Relacionamento N:M com Eventos por meio da tabela Certificados
+    endereco = relationship("Endereco", back_populates="participante", uselist=False)  
     certificado = relationship("Certificado", back_populates="participante", cascade="all, delete")
-    inscricao = relationship("Inscricao", back_populates="participante", cascade="all, delete-orphan")  # Um participante tem várias inscrições
+    inscricao = relationship("Inscricao", back_populates="participante", cascade="all, delete-orphan")  
 

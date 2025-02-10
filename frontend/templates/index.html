@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticador</title>
+</head>
+<body>
+    <h1>Criar Autenticador</h1>
+    <form action="/create_autenticador" method="POST">
+        <label for="orgao">Órgão:</label>
+        <input type="text" id="orgao" name="orgao" required><br>
+
+        <label for="status">Status:</label>
+        <input type="text" id="status" name="status" required><br>
+
+        <label for="chave_autenticacao">Chave de Autenticação:</label>
+        <input type="text" id="chave_autenticacao" name="chave_autenticacao" required><br>
+
+        <label for="data_expiracao">Data de Expiração:</label>
+        <input type="date" id="data_expiracao" name="data_expiracao"><br>
+
+        <button type="submit">Criar Autenticador</button>
+    </form>
+
+    <hr>
+
+    <h1>Lista de Autenticadores</h1>
+    <button onclick="loadAutenticadores()">Carregar Autenticadores</button>
+    <ul id="autenticador-list">
+        <!-- Lista de autenticadores será exibida aqui -->
+    </ul>
+
+    <script>
+        // Função para carregar autenticadores via GET
+        function loadAutenticadores() {
+            fetch('/list_autenticadores')
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById("autenticador-list");
+                    list.innerHTML = "";
+                    data.forEach(item => {
+                        const li = document.createElement("li");
+                        li.textContent = `${item.orgao} - ${item.status} - ${item.chave_autenticacao}`;
+                        list.appendChild(li);
+                    });
+                });
+        }
+    </script>
+</body>
+</html>

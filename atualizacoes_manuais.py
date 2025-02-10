@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 import asyncio
 
 # Configuração do banco de dados
-DATABASE_URL = "postgresql+asyncpg://admin:123456@localhost/ProjetoDB"
+DATABASE_URL = "postgresql+asyncpg://admin:123456@localhost/EventsDB"
 engine = create_async_engine(DATABASE_URL, echo=True)
 
 # Função para excluir todas as tabelas

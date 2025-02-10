@@ -25,8 +25,8 @@ async def create_local(db: AsyncSession, local: LocalCreate):
         params = {
             "cidade": local.cidade,
             "nome": local.nome,
-            "estado": local.estado,  # Novo campo opcional
-            "descricao": local.descricao  # Novo campo opcional
+            "estado": local.estado, 
+            "descricao": local.descricao  
         }
 
         result = await db.execute(query, params)
@@ -37,15 +37,13 @@ async def create_local(db: AsyncSession, local: LocalCreate):
             "id": row.id,
             "cidade": row.cidade,
             "nome": row.nome,
-            "estado": row.estado,  # Retorna o valor do novo campo
-            "descricao": row.descricao  # Retorna o valor do novo campo
+            "estado": row.estado,  
+            "descricao": row.descricao  
         }
 
     except Exception as e:
-        await db.rollback()  # Reverte a transação em caso de erro
-        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
-
-
+        await db.rollback()  
+        raise e  
 
 
 async def get_local(db: AsyncSession, local_id: int):
@@ -87,7 +85,6 @@ async def bulk_create_local(db: AsyncSession, locais: list[LocalCreate]):
     db_locais = [Local(**local.model_dump()) for local in locais]
     db.add_all(db_locais)
     await db.commit()
-    # Atualiza os objetos para garantir dados consistentes
     for local in db_locais:
         await db.refresh(local)
     return db_locais

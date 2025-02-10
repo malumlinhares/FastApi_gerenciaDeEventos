@@ -1,59 +1,30 @@
-# from pydantic import BaseModel
-# from typing import List
-
-# class LocalBase(BaseModel):
-#     cidade: str
-#     capacidade: int 
-#     nome: str 
-
-
-#     class Config:
-#         from_attributes = True
-
-# class LocalCreate(BaseModel):  # Para criação do Local
-#     cidade: str
-#     capacidade: int 
-#     nome: str 
-
-#     class Config:
-#         from_attributes = True# 
-
-# class LocalResponse(LocalCreate):  # Para a resposta com ID
-#     id: int
-#     cidade: str
-#     capacidade: int 
-#     nome: str 
-
-# class LocalBulkCreate(BaseModel):  # Para a criação em massa do Local
-#     locais: List[LocalBase]  
-
 from pydantic import BaseModel
 from typing import List, Optional
 
 class LocalBase(BaseModel):
     cidade: str
     nome: str
-    estado: Optional[str] = None  # Campo opcional
-    descricao: Optional[str] = None  # Campo opcional
+    estado: Optional[str] = None  
+    descricao: Optional[str] = None  
 
     class Config:
         from_attributes = True
 
-class LocalCreate(LocalBase):  # Para criação do Local
+class LocalCreate(LocalBase):  
     cidade: str
     nome: str
-    estado: Optional[str] = None  # Campo opcional
-    descricao: Optional[str] = None  # Campo opcional
+    estado: Optional[str] = None  
+    descricao: Optional[str] = None  
 
     class Config:
         from_attributes = True
 
-class LocalResponse(LocalCreate):  # Para a resposta com ID
+class LocalResponse(LocalCreate):  
     id: int
     cidade: str
     nome: str
-    estado: Optional[str] = None  # Campo opcional
-    descricao: Optional[str] = None  # Campo opcional
+    estado: Optional[str] = None  
+    descricao: Optional[str] = None  
 
-class LocalBulkCreate(BaseModel):  # Para a criação em massa do Local
+class LocalBulkCreate(BaseModel):  
     locais: List[LocalBase]

@@ -15,13 +15,11 @@ class Patrocinador(Base):
     email = Column(String, nullable=False, unique=True)
     tipo = Column(Enum(TipoPatrocinador, name="tipo_patrocinador", create_type=True), nullable=False)
     orgao_responsavel = Column(String, nullable=True)
-    responsavel_comercial = Column(String, nullable=True)  # Apenas para patrocinadores privados
-    
-    # Atributos opcionais adicionados
-    telefone = Column(String, nullable=True)  # Novo campo opcional
-    nome_responsavel = Column(String, nullable=True)  # Novo campo opcional
+    responsavel_comercial = Column(String, nullable=True)  
+    telefone = Column(String, nullable=True)  
+    nome_responsavel = Column(String, nullable=True) 
 
-    # Relacionamento N:M com Eventos via Patrocinios
+
     patrocinio = relationship("Patrocinio", back_populates="patrocinador")
 
     __mapper_args__ = {

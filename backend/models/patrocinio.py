@@ -9,14 +9,11 @@ class Patrocinio(Base):
     id = Column(Integer, primary_key=True, index=True)
     valor = Column(Float, index=True, nullable=False)
     descricao = Column(String, index=True, nullable=False)
-    
     evento_id = Column(Integer, ForeignKey("eventos.id", ondelete="CASCADE"), nullable=False)
     patrocinador_id = Column(Integer, ForeignKey("patrocinadores.id", ondelete="CASCADE"), nullable=False)
-    
-    # Atributos opcionais
-    status = Column(String, nullable=True)  # Atributo opcional para status (por exemplo, "ativo", "inativo")
-    observacao = Column(String, nullable=True)  # Atributo opcional para observações adicionais
+    status = Column(String, nullable=True)  
+    observacao = Column(String, nullable=True) 
 
-    # Relacionamentos
+
     evento = relationship("Evento", back_populates="patrocinio")
     patrocinador = relationship("Patrocinador", back_populates="patrocinio")

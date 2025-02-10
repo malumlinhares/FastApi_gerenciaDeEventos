@@ -5,6 +5,7 @@ from backend.schemas.certificado import CertificadoCreate
 from sqlalchemy import text
 from datetime import datetime
 from typing import Optional
+
 #usando bibliofeca
 # async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
 #     db_certificado = Certificado(
@@ -18,7 +19,6 @@ from typing import Optional
 #     return db_certificado
 
 # usando sql nativo
-
 async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
     try:
         query = text("""
@@ -49,8 +49,8 @@ async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
         }
 
     except Exception as e:
-        await db.rollback()  # Reverte a transação em caso de falha
-        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
+        await db.rollback() 
+        raise e  
 
 
 
@@ -87,7 +87,6 @@ async def bulk_create_certificado(db: AsyncSession, certificados: list[Certifica
     db_certificados = [Certificado(**certificado.model_dump()) for certificado in certificados]
     db.add_all(db_certificados)
     await db.commit()
-    # Atualiza os objetos para garantir dados consistentes
     for certificado in db_certificados:
         await db.refresh(certificado)
     return db_certificados

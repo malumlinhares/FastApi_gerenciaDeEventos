@@ -132,19 +132,6 @@ async def bulk_create_participante(db: AsyncSession, participantes: list[Partici
 #     result = await db.execute(query)
 #     return result.scalars().unique().all()
 
-# async def get_participantes_com_certificados_left_join(db: AsyncSession):
-#     """
-#     Retorna todos os participantes, incluindo aqueles sem certificados (LEFT JOIN).
-#     """
-#     query = (
-#         select(Participante)
-#         .outerjoin(Certificado, Participante.id == Certificado.participante_id)
-#         .options(joinedload(Participante.certificado))
-#     )
-#     result = await db.execute(query)
-#     return result.scalars().unique().all()
-
-
 async def get_participantes_com_certificados_inner_join(db: AsyncSession):
     """
     Retorna todos os participantes que possuem certificados (INNER JOIN).
@@ -156,7 +143,7 @@ async def get_participantes_com_certificados_inner_join(db: AsyncSession):
     """)
     
     result = await db.execute(query)
-    participantes = result.fetchall()  # Retorna todos os participantes com certificados
+    participantes = result.fetchall()  
     return participantes
 
 
@@ -171,39 +158,43 @@ async def get_participantes_com_certificados_left_join(db: AsyncSession):
     """)
     
     result = await db.execute(query)
-    participantes = result.fetchall()  # Retorna todos os participantes, com ou sem certificados
+    participantes = result.fetchall()  
     return participantes
 
-# Retorna participantes ordenados
 async def get_participantes_ordenados(db: AsyncSession, ordem: str):
     """
     Retorna todos os participantes ordenados pelo nome.
     A ordenação pode ser 'ASC' para ascendente ou 'DESC' para descendente.
     """
-    query = text(f"""
-        SELECT p.id, p.nome, p.email
+    if ordem.upper() not in {"ASC", "DESC"}:
+        raise ValueError("A ordenação deve ser 'ASC' ou 'DESC'.")
+
+    query = text("""
+        SELECT p.id, p.nome, p.email, p.tipo, p.anuidade, p.elegivel_upgrade, p.endereco_id
         FROM participantes p
-        ORDER BY p.nome {ordem}
-    """)
+        ORDER BY p.nome """ + ordem.upper())
 
     result = await db.execute(query)
-    participantes = result.fetchall()  # Retorna participantes ordenados
+    participantes = result.fetchall()
     return participantes
 
 from backend.schemas.endereco import EnderecoCreate
 from backend.models.endereco import Endereco
 
 async def create_participante_com_endereco(db: AsyncSession, participante: ParticipanteCreate, endereco: EnderecoCreate):
-    # Cria o endereço
     endereco_db = Endereco(**endereco.dict())
     db.add(endereco_db)
-    await db.commit()  # Use o commit assíncrono
-    await db.refresh(endereco_db)  # Obtém o ID do novo endereço
+    await db.commit() 
+    await db.refresh(endereco_db)  
 
-    # Cria o participante com o ID do endereço
-    participante_db = Participante(**participante.dict(), endereco_id=endereco_db.id)
+    participante_dict = participante.dict(exclude_unset=True)
+    participante_dict['endereco_id'] = endereco_db.id  
+
+    participante_db = Participante(**participante_dict)
     db.add(participante_db)
     await db.commit()
     await db.refresh(participante_db)
 
     return participante_db
+
+

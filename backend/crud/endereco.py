@@ -47,9 +47,8 @@ async def create_endereco(db: AsyncSession, endereco: EnderecoCreate):
         }
     
     except Exception as e:
-        await db.rollback()  # Reverte a transação em caso de erro
-        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
-
+        await db.rollback()  
+        raise e  
 
 async def get_endereco(db: AsyncSession, endereco_id: int):
     result = await db.execute(select(Endereco).filter(Endereco.id == endereco_id))
@@ -83,7 +82,6 @@ async def bulk_create_endereco(db: AsyncSession, enderecos: list[EnderecoCreate]
     db_enderecos = [Endereco(**endereco.model_dump()) for endereco in enderecos]
     db.add_all(db_enderecos)
     await db.commit()
-    # Atualiza os objetos para garantir dados consistentes
     for endereco in db_enderecos:
         await db.refresh(endereco)
     return db_enderecos

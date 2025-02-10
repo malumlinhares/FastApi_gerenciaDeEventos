@@ -1,27 +1,6 @@
-# from pydantic import BaseModel
-# from typing import List
-
-# class AutenticadorBase(BaseModel):
-#     orgao: str
-
-#     class Config:
-#         from_attributes = True
-
-# class AutenticadorCreate(AutenticadorBase):  # Para criação do autenticador
-#     orgao: str
-
-#     class Config:
-#         from_attributes = True
-
-# class AutenticadorResponse(AutenticadorBase):  # Para a resposta com ID
-#     id: int
-
-# class AutenticadorBulkCreate(BaseModel):  # Para a criação em massa do Autenticador
-#     autenticadores: List[AutenticadorBase]  
-
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
+from datetime import date
 
 class AutenticadorBase(BaseModel):
     orgao: str
@@ -30,14 +9,14 @@ class AutenticadorBase(BaseModel):
     class Config:
         from_attributes = True
 
-class AutenticadorCreate(AutenticadorBase):  # Para criação do autenticador
+class AutenticadorCreate(AutenticadorBase):  
     chave_autenticacao: str
-    data_expiracao: Optional[datetime] = None  # Opcional
+    data_expiracao: Optional[date] = None  
 
-class AutenticadorResponse(AutenticadorBase):  # Para a resposta com ID
+class AutenticadorResponse(AutenticadorBase):  
     id: int
     chave_autenticacao: str
-    data_expiracao: Optional[datetime] = None  # Opcional
+    data_expiracao: Optional[date] = None  
 
-class AutenticadorBulkCreate(BaseModel):  # Para a criação em massa do Autenticador
+class AutenticadorBulkCreate(BaseModel):  
     autenticadores: List[AutenticadorCreate]

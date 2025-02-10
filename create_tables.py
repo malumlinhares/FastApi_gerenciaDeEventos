@@ -15,7 +15,7 @@ from backend.models.patrocinio import Patrocinio
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Configuração do banco de dados
-DATABASE_URL = "postgresql+asyncpg://admin:123456@localhost/ProjetoDB"
+DATABASE_URL = "postgresql+asyncpg://admin:123456@localhost/EventsDB"
 
 # Criando o motor assíncrono e a sessão
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -31,6 +31,14 @@ async def create_tables():
         async with engine.begin() as conn:
             # Criação de todas as tabelas definidas nos models
             await conn.run_sync(Base.metadata.create_all)
+            # await conn.execute("""
+            #     CREATE TABLE IF NOT EXISTS logs (
+            #         id SERIAL PRIMARY KEY,
+            #         mensagem TEXT NOT NULL,
+            #         data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            #     );
+            # """)
+            
             print("Tabelas criadas ou atualizadas com sucesso!")
     except Exception as e:
         print(f"Erro ao criar/atualizar as tabelas: {e}")

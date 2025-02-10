@@ -39,7 +39,6 @@ async def delete_autenticador_api(
         raise HTTPException(status_code=404, detail="Autenticador não encontrado")
     return db_autenticador
 
-# Operações em massa
 @router.post("/bulk", response_model=List[AutenticadorResponse])
 async def bulk_create_autenticadores(
     autenticadores: List[AutenticadorCreate], 

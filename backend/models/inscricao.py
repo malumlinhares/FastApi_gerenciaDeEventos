@@ -12,8 +12,7 @@ class Inscricao(Base):
     forma_pagamento = Column(String, index=True, nullable=False)
     valor = Column(Float, index=True, nullable=False)
     participante_id = Column(Integer, ForeignKey("participantes.id"),  nullable=False)
-    #2 campos opcinais
-    data_pagamento = Column(DateTime, nullable=True)  # Data do pagamento (opcional)
+    data_pagamento = Column(DateTime, nullable=True) 
     observacao = Column(String, nullable=True)  
     participante = relationship("Participante", back_populates="inscricao")
 

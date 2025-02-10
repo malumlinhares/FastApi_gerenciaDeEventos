@@ -41,7 +41,6 @@ async def delete_patrocinio_api(
     
     return db_patrocinio
 
-#manipulação em massa
 @router.post("/bulk", response_model=List[PatrocinioResponse])
 async def bulk_create_patrocinios(
     patrocinios: List[PatrocinioCreate], 

@@ -36,8 +36,8 @@ async def create_evento(db: AsyncSession, evento: EventoCreate):
             "numerohoras": evento.numerohoras,
             "local_id": evento.local_id,
             "organizador_id": evento.organizador_id,
-            "descricao": evento.descricao,  # Campo opcional
-            "limite_participantes": evento.limite_participantes  # Campo opcional
+            "descricao": evento.descricao, 
+            "limite_participantes": evento.limite_participantes  
         }
 
         result = await db.execute(query, params)
@@ -52,14 +52,13 @@ async def create_evento(db: AsyncSession, evento: EventoCreate):
             "numerohoras": row.numerohoras,
             "local_id": row.local_id,
             "organizador_id": row.organizador_id,
-            "descricao": row.descricao,  # Retorno do campo opcional
-            "limite_participantes": row.limite_participantes  # Retorno do campo opcional
+            "descricao": row.descricao,
+            "limite_participantes": row.limite_participantes  
         }
     
     except Exception as e:
-        await db.rollback()  # Reverte a transação em caso de erro
-        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
-
+        await db.rollback()  
+        raise e 
 
 
 async def get_evento(db: AsyncSession, evento_id: int):
@@ -68,7 +67,6 @@ async def get_evento(db: AsyncSession, evento_id: int):
     )
     evento = result.scalars().first()
     return evento 
-
 
 
 async def update_evento(db: AsyncSession, evento_id: int, evento: EventoCreate):
@@ -107,12 +105,10 @@ async def bulk_create_evento(db: AsyncSession, eventos: list[EventoCreate]):
     db_eventos = [Evento(**evento.model_dump()) for evento in eventos]
     db.add_all(db_eventos)
     await db.commit()
-    # Atualiza os objetos para garantir dados consistentes
     for evento in db_eventos:
         await db.refresh(evento)
     return db_eventos
 
-# Retorna eventos com mais de 3 patrocínios
 async def get_eventos_com_patrocinios(db: AsyncSession):
     """
     Retorna os eventos com a quantidade e o valor total dos patrocínios, 

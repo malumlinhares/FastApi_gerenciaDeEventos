@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.post("/", response_model=PatrocinadorResponse)
 async def create_patrocinador_api(patrocinador: PatrocinadorCreate, db: AsyncSession = Depends(get_db)):
-    print(f"JSON recebido: {patrocinador.dict()}")  # Debug para verificar o JSON
+    print(f"JSON recebido: {patrocinador.dict()}")  
     return await create_patrocinador(db=db, patrocinador=patrocinador)
 
 @router.get("/{patrocinador_id}", response_model=PatrocinadorResponse)
@@ -53,7 +53,6 @@ async def bulk_create_patrocinadores(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# Nova rota para buscar patrocinadores por substring no nome
 @router.get("/search/", response_model=List[PatrocinadorResponse])
 async def search_patrocinador_api(nome_substring: str, db: AsyncSession = Depends(get_db)):
 
