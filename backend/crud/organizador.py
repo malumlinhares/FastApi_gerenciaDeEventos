@@ -17,25 +17,37 @@ from sqlalchemy import text
 #     return db_organizador  
 
 async def create_organizador(db: AsyncSession, organizador: OrganizadorCreate):
-    query = text("""
-        INSERT INTO organizadores (nome, email, cnpj)
-        VALUES (:nome, :email, :cnpj)
-        RETURNING id, nome, email, cnpj
-    """)
-    params = {
-        "nome": organizador.nome,
-        "email": organizador.email,
-        "cnpj": organizador.cnpj
-    }
-    result = await db.execute(query, params)
-    row = result.fetchone()
-    await db.commit()
-    return {
-        "id": row.id,
-        "nome": row.nome,
-        "email": row.email,
-        "cnpj": row.cnpj
-    }
+    try:
+        query = text("""
+            INSERT INTO organizadores (nome, email, cnpj, telefone, nome_contato)
+            VALUES (:nome, :email, :cnpj, :telefone, :nome_contato)
+            RETURNING id, nome, email, cnpj, telefone, nome_contato
+        """)
+        params = {
+            "nome": organizador.nome,
+            "email": organizador.email,
+            "cnpj": organizador.cnpj,
+            "telefone": organizador.telefone,  # Campo opcional
+            "nome_contato": organizador.nome_contato   # Campo opcional
+        }
+        
+        result = await db.execute(query, params)
+        row = result.fetchone()
+        await db.commit()
+
+        return {
+            "id": row.id,
+            "nome": row.nome,
+            "email": row.email,
+            "cnpj": row.cnpj,
+            "telefone": row.telefone,  # Retorno do campo opcional
+            "nome_contato": row.nome_contato   # Retorno do campo opcional
+        }
+
+    except Exception as e:
+        await db.rollback()  # Reverte a transação em caso de erro
+        raise e  # Levanta a exceção para ser tratada em nível superior
+
 
 async def get_organizador(db: AsyncSession, organizador_id: int):
     result = await db.execute(
@@ -55,6 +67,8 @@ async def update_organizador(db: AsyncSession, organizador_id: int, organizador:
     db_organizador.nome = organizador.nome
     db_organizador.email = organizador.email
     db_organizador.cnpj = organizador.cnpj
+    db_organizador.telefone = organizador.telefone
+    db_organizador.nome_contato = organizador.nome_contato
 
     
     await db.commit()

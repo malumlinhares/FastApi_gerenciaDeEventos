@@ -17,27 +17,37 @@ from sqlalchemy import text
 
 
 async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
-    query = text("""
-        INSERT INTO patrocinios (valor, descricao, evento_id, patrocinador_id)
-        VALUES (:valor, :descricao, :evento_id, :patrocinador_id)
-        RETURNING id, valor, descricao, evento_id, patrocinador_id
-    """)
-    params = {
-        "valor": patrocinio.valor,
-        "descricao": patrocinio.descricao,
-        "evento_id": patrocinio.evento_id, 
-        "patrocinador_id": patrocinio.patrocinador_id
-    }
-    result = await db.execute(query, params)
-    row = result.fetchone()
-    await db.commit()
-    return {
-        "id": row.id,
-        "valor": row.valor,
-        "descricao": row.descricao,
-        "evento_id": row.evento_id, 
-        "patrocinador_id": row.patrocinador_id
-    }
+    try:
+        query = text("""
+            INSERT INTO patrocinios (valor, descricao, evento_id, patrocinador_id, status, observacao)
+            VALUES (:valor, :descricao, :evento_id, :patrocinador_id, :status, :observacao)
+            RETURNING id, valor, descricao, evento_id, patrocinador_id, status, observacao
+        """)
+        params = {
+            "valor": patrocinio.valor,
+            "descricao": patrocinio.descricao,
+            "evento_id": patrocinio.evento_id, 
+            "patrocinador_id": patrocinio.patrocinador_id,
+            "status": patrocinio.status,  # Novo campo opcional
+            "observacao": patrocinio.observacao  # Novo campo opcional
+        }
+        result = await db.execute(query, params)
+        row = result.fetchone()
+        await db.commit()
+
+        return {
+            "id": row.id,
+            "valor": row.valor,
+            "descricao": row.descricao,
+            "evento_id": row.evento_id, 
+            "patrocinador_id": row.patrocinador_id,
+            "status": row.status,  # Novo campo opcional
+            "observacao": row.observacao  # Novo campo opcional
+        }
+
+    except Exception as e:
+        await db.rollback()  # Reverte a transação em caso de erro
+        raise e  # Levanta a exceção para ser tratada em nível superior
 
 
 
@@ -61,6 +71,8 @@ async def update_patrocinio(db: AsyncSession, patrocinio_id: int, patrocinio: Pa
     db_patrocinio.descricao = patrocinio.descricao
     db_patrocinio.evento_id = patrocinio.evento_id
     db_patrocinio.patrocinador_id = patrocinio.patrocinador_id
+    db_patrocinio.status = patrocinio.status
+    db_patrocinio.observacao = patrocinio.observacao
 
     await db.commit()
     await db.refresh(db_patrocinio)

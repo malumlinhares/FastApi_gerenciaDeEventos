@@ -1,0 +1,131 @@
+CREATE TABLE patrocinadores (
+        id SERIAL NOT NULL, 
+        nome VARCHAR NOT NULL, 
+        email VARCHAR NOT NULL, 
+        tipo tipo_patrocinador NOT NULL, 
+        orgao_responsavel VARCHAR, 
+        responsavel_comercial VARCHAR, 
+        telefone VARCHAR, 
+        nome_responsavel VARCHAR, 
+        PRIMARY KEY (id), 
+        UNIQUE (email), 
+        UNIQUE (orgao_responsavel), 
+        UNIQUE (responsavel_comercial)
+);
+
+
+CREATE TABLE organizadores (
+        id SERIAL NOT NULL, 
+        nome VARCHAR NOT NULL, 
+        email VARCHAR NOT NULL, 
+        cnpj VARCHAR NOT NULL, 
+        telefone VARCHAR, 
+        nome_contato VARCHAR, 
+        PRIMARY KEY (id)
+);
+
+
+CREATE TABLE locais (
+        id SERIAL NOT NULL, 
+        cidade VARCHAR NOT NULL, 
+        nome VARCHAR NOT NULL, 
+        estado VARCHAR, 
+        descricao VARCHAR, 
+        PRIMARY KEY (id)
+);
+
+
+CREATE TABLE autenticadores (
+        id SERIAL NOT NULL, 
+        chave_autenticacao VARCHAR NOT NULL, 
+        orgao VARCHAR NOT NULL, 
+        status VARCHAR, 
+        data_expiracao TIMESTAMP WITHOUT TIME ZONE, 
+        PRIMARY KEY (id), 
+        UNIQUE (chave_autenticacao), 
+        UNIQUE (orgao)
+);
+
+
+CREATE TABLE enderecos (
+        id SERIAL NOT NULL, 
+        rua VARCHAR NOT NULL, 
+        cep VARCHAR NOT NULL, 
+        numero INTEGER NOT NULL, 
+        complemento VARCHAR, 
+        ponto_de_referencia VARCHAR, 
+        PRIMARY KEY (id)
+);
+
+
+CREATE TABLE eventos (
+        id SERIAL NOT NULL, 
+        nome VARCHAR NOT NULL, 
+        categoria VARCHAR NOT NULL, 
+        data DATE NOT NULL, 
+        numerohoras INTEGER NOT NULL, 
+        local_id INTEGER NOT NULL, 
+        organizador_id INTEGER NOT NULL, 
+        descricao VARCHAR, 
+        limite_participantes INTEGER, 
+        PRIMARY KEY (id), 
+        FOREIGN KEY(local_id) REFERENCES locais (id), 
+        FOREIGN KEY(organizador_id) REFERENCES organizadores (id)
+);
+
+
+CREATE TABLE participantes (
+        id SERIAL NOT NULL, 
+        nome VARCHAR NOT NULL, 
+        email VARCHAR NOT NULL, 
+        tipo VARCHAR NOT NULL, 
+        anuidade INTEGER, 
+        elegivel_upgrade INTEGER NOT NULL, 
+        endereco_id INTEGER, 
+        telefone VARCHAR, 
+        responsavel VARCHAR, 
+        PRIMARY KEY (id), 
+        UNIQUE (email), 
+        UNIQUE (endereco_id), 
+        FOREIGN KEY(endereco_id) REFERENCES enderecos (id) ON DELETE CASCADE
+);
+
+CREATE TABLE certificados (
+        id SERIAL NOT NULL, 
+        evento_id INTEGER NOT NULL, 
+        participante_id INTEGER NOT NULL, 
+        autenticador_id INTEGER, 
+        data_emissao TIMESTAMP WITHOUT TIME ZONE, 
+        codigo_verificacao VARCHAR, 
+        PRIMARY KEY (id), 
+        FOREIGN KEY(evento_id) REFERENCES eventos (id), 
+        FOREIGN KEY(participante_id) REFERENCES participantes (id), 
+        FOREIGN KEY(autenticador_id) REFERENCES autenticadores (id), 
+        UNIQUE (codigo_verificacao)
+);
+
+
+CREATE TABLE inscricao (
+        numero_inscricao SERIAL NOT NULL, 
+        status VARCHAR DEFAULT 'Pendente' NOT NULL, 
+        forma_pagamento VARCHAR NOT NULL, 
+        valor FLOAT NOT NULL, 
+        participante_id INTEGER NOT NULL, 
+        data_pagamento TIMESTAMP WITHOUT TIME ZONE, 
+        observacao VARCHAR, 
+        PRIMARY KEY (numero_inscricao), 
+        FOREIGN KEY(participante_id) REFERENCES participantes (id)
+);
+
+CREATE TABLE patrocinios (
+        id SERIAL NOT NULL, 
+        valor FLOAT NOT NULL, 
+        descricao VARCHAR NOT NULL, 
+        evento_id INTEGER NOT NULL, 
+        patrocinador_id INTEGER NOT NULL, 
+        status VARCHAR, 
+        observacao VARCHAR, 
+        PRIMARY KEY (id), 
+        FOREIGN KEY(evento_id) REFERENCES eventos (id) ON DELETE CASCADE, 
+        FOREIGN KEY(patrocinador_id) REFERENCES patrocinadores (id) ON DELETE CASCADE
+);

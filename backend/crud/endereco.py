@@ -19,27 +19,37 @@ from sqlalchemy import text
 
 # usando sql nativo
 async def create_endereco(db: AsyncSession, endereco: EnderecoCreate):
-    query = text("""
-        INSERT INTO enderecos (rua, cep, numero, participante_id)
-        VALUES (:rua, :cep, :numero, :participante_id)
-        RETURNING id, rua, cep, numero, participante_id
-    """)
-    params = {
-        "rua": endereco.rua,
-        "cep": endereco.cep,
-        "numero": endereco.numero,
-        "participante_id": endereco.participante_id
-    }
-    result = await db.execute(query, params)
-    row = result.fetchone()
-    await db.commit()
-    return {
-        "id": row.id,
-        "rua": row.rua,
-        "cep": row.cep,
-        "numero": row.numero,
-        "participante_id": row.participante_id
-    }
+    try:
+        query = text("""
+            INSERT INTO enderecos (rua, cep, numero, complemento, ponto_de_referencia)
+            VALUES (:rua, :cep, :numero, :complemento, :ponto_de_referencia)
+            RETURNING id, rua, cep, numero,  complemento, ponto_de_referencia
+        """)
+        params = {
+            "rua": endereco.rua,
+            "cep": endereco.cep,
+            "numero": endereco.numero,
+            "complemento": endereco.complemento if endereco.complemento else None,  # Opcional
+            "ponto_de_referencia": endereco.ponto_de_referencia if endereco.ponto_de_referencia else None  # Opcional
+        }
+
+        result = await db.execute(query, params)
+        row = result.fetchone()
+        await db.commit()
+
+        return {
+            "id": row.id,
+            "rua": row.rua,
+            "cep": row.cep,
+            "numero": row.numero,
+            "complemento": row.complemento,
+            "ponto_de_referencia": row.ponto_de_referencia
+        }
+    
+    except Exception as e:
+        await db.rollback()  # Reverte a transação em caso de erro
+        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
+
 
 async def get_endereco(db: AsyncSession, endereco_id: int):
     result = await db.execute(select(Endereco).filter(Endereco.id == endereco_id))
@@ -54,7 +64,8 @@ async def update_endereco(db: AsyncSession, endereco_id: int, endereco: Endereco
     db_endereco.rua = endereco.rua
     db_endereco.cep = endereco.cep
     db_endereco.numero = endereco.numero
-    db_endereco.participante_id = endereco.participante_id
+    db_endereco.complemento = endereco.complemento
+    db_endereco.ponto_de_referencia = endereco.ponto_de_referencia
     await db.commit()
     await db.refresh(db_endereco)
     return db_endereco

@@ -53,7 +53,7 @@ from backend.schemas.evento import (
 
 from backend.crud.evento import (
     create_evento, get_evento, update_evento, delete_evento,
-    bulk_create_evento
+    bulk_create_evento, get_eventos_com_patrocinios
 )
 
 router = APIRouter()
@@ -105,3 +105,10 @@ async def bulk_create_eventos(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.get("/eventos/com-patrocinios", response_model=List[EventoResponse])
+async def read_eventos_com_patrocinios(db: AsyncSession = Depends(get_db)):
+    """
+    Retorna os eventos com a quantidade e o valor total dos patrocínios, 
+    filtrando para incluir apenas eventos com mais de 3 patrocínios.
+    """
+    return await get_eventos_com_patrocinios(db)

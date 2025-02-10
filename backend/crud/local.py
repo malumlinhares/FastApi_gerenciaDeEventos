@@ -16,25 +16,36 @@ from sqlalchemy import text
 #     return db_local  
 
 async def create_local(db: AsyncSession, local: LocalCreate):
-    query = text("""
-        INSERT INTO locais (cidade, capacidade, nome)
-        VALUES (:cidade, :capacidade, :nome)
-        RETURNING id, cidade, capacidade, nome
-    """)
-    params = {
-        "cidade": local.cidade,
-        "capacidade": local.capacidade,
-        "nome": local.nome
-    }
-    result = await db.execute(query, params)
-    row = result.fetchone()
-    await db.commit()
-    return {
-        "id": row.id,
-        "cidade": row.cidade,
-        "capacidade": row.capacidade,
-        "nome": row.nome
-    }
+    try:
+        query = text("""
+            INSERT INTO locais (cidade, nome, estado, descricao)
+            VALUES (:cidade, :nome, :estado, :descricao)
+            RETURNING id, cidade, nome, estado, descricao
+        """)
+        params = {
+            "cidade": local.cidade,
+            "nome": local.nome,
+            "estado": local.estado,  # Novo campo opcional
+            "descricao": local.descricao  # Novo campo opcional
+        }
+
+        result = await db.execute(query, params)
+        row = result.fetchone()
+        await db.commit()
+        
+        return {
+            "id": row.id,
+            "cidade": row.cidade,
+            "nome": row.nome,
+            "estado": row.estado,  # Retorna o valor do novo campo
+            "descricao": row.descricao  # Retorna o valor do novo campo
+        }
+
+    except Exception as e:
+        await db.rollback()  # Reverte a transação em caso de erro
+        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
+
+
 
 
 async def get_local(db: AsyncSession, local_id: int):
@@ -53,8 +64,9 @@ async def update_local(db: AsyncSession, local_id: int, local: LocalCreate):
     if db_local is None:
         return None
     db_local.cidade = local.cidade
-    db_local.capacidade = local.capacidade
     db_local.nome = local.nome
+    db_local.estado = local.estado
+    db_local.descricao = local.descricao
     
     await db.commit()
     await db.refresh(db_local)

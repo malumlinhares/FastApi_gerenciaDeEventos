@@ -13,16 +13,38 @@ from sqlalchemy import text
 #     return db_autenticador
 
 #usando sqlnativo:
+
 async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate):
-    query = text("""
-        INSERT INTO autenticadores (orgao)
-        VALUES (:orgao)
-        RETURNING id, orgao
-    """)
-    result = await db.execute(query, {"orgao": autenticador.orgao})
-    row = result.fetchone()
-    await db.commit()  
-    return {"id": row.id, "orgao": row.orgao}
+    try:
+        query = text("""
+            INSERT INTO autenticadores (chave_autenticacao, orgao, status, data_expiracao)
+            VALUES (:chave_autenticacao, :orgao, :status, :data_expiracao)
+            RETURNING id, chave_autenticacao, orgao, status, data_expiracao
+        """)
+
+        result = await db.execute(
+            query,
+            {
+                "chave_autenticacao": autenticador.chave_autenticacao,
+                "orgao": autenticador.orgao,
+                "status": autenticador.status,
+                "data_expiracao": autenticador.data_expiracao,
+            }
+        )
+
+        row = result.fetchone()  # Captura o resultado da consulta
+        await db.commit()  # Confirma a transação
+        return {
+            "id": row.id,
+            "chave_autenticacao": row.chave_autenticacao,
+            "orgao": row.orgao,
+            "status": row.status,
+            "data_expiracao": row.data_expiracao
+        }
+
+    except Exception as e:
+        await db.rollback()  # Reverte a transação em caso de falha
+        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
 
 
 async def get_autenticador(db: AsyncSession, autenticador_id: int):
@@ -34,7 +56,10 @@ async def update_autenticador(db: AsyncSession, autenticador_id: int, autenticad
     db_autenticador = result.scalars().first()
     if db_autenticador is None:
         return None
+    db_autenticador.chave_autenticacao = autenticador.chave_autenticacao
     db_autenticador.orgao = autenticador.orgao
+    db_autenticador.status = autenticador.status
+    db_autenticador.data_expiracao = autenticador.data_expiracao
     await db.commit()
     await db.refresh(db_autenticador)
     return db_autenticador

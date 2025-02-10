@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.patrocinador import PatrocinadorCreate, PatrocinadorResponse
-from backend.crud.patrocinador import create_patrocinador, get_patrocinador, delete_patrocinador, update_patrocinador, bulk_create_patrocinador, search_patrocinador_by_name
+from backend.crud.patrocinador import create_patrocinador, get_patrocinador, delete_patrocinador, update_patrocinador, bulk_create_patrocinador, search_patrocinador_by_name, get_patrocinadores_com_valores_acima_da_media, criar_gatilho_notificacao_patrocinador_privado
 from typing import List
 
 router = APIRouter()
@@ -61,3 +61,19 @@ async def search_patrocinador_api(nome_substring: str, db: AsyncSession = Depend
     if not db_patrocinadores:
         raise HTTPException(status_code=404, detail="Patrocinadores não encontrados")
     return db_patrocinadores
+
+@router.get("/patrocinadores/com-valores-acima-da-media", response_model=List[PatrocinadorResponse])
+async def read_patrocinadores_com_valores_acima_da_media(db: AsyncSession = Depends(get_db)):
+    """
+    Retorna todos os patrocinadores que têm patrocínios com valor superior à média dos seus próprios patrocínios.
+    """
+    return await get_patrocinadores_com_valores_acima_da_media(db)
+
+
+@router.post("/gatilho/criar-notificacao-patrocinador-privado")
+async def create_gatilho_notificacao_patrocinador_privado(db: AsyncSession = Depends(get_db)):
+    """
+    Cria um gatilho para notificar sobre a inserção de patrocinadores do tipo 'privado'.
+    """
+    await criar_gatilho_notificacao_patrocinador_privado(db)
+    return {"message": "Gatilho criado com sucesso!"}

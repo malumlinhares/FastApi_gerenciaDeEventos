@@ -19,29 +19,40 @@ from sqlalchemy import text
 #     return db_patrocinador
 
 async def create_patrocinador(db: AsyncSession, patrocinador: PatrocinadorCreate):
-    query = text("""
-        INSERT INTO patrocinadores (nome, email, tipo, orgao_responsavel, responsavel_comercial)
-        VALUES (:nome, :email, :tipo, :orgao_responsavel, :responsavel_comercial)
-        RETURNING id, nome, email, tipo, orgao_responsavel, responsavel_comercial
-    """)
-    params = {
-        "nome": patrocinador.nome,
-        "email": patrocinador.email,
-        "tipo": patrocinador.tipo, 
-        "orgao_responsavel": patrocinador.orgao_responsavel,  # Corrigido para remover a vírgula extra
-        "responsavel_comercial": patrocinador.responsavel_comercial
-    }
-    result = await db.execute(query, params)
-    row = result.fetchone()
-    await db.commit()
-    return {
-        "id": row.id,
-        "nome": row.nome,
-        "email": row.email,
-        "tipo": row.tipo, 
-        "orgao_responsavel": row.orgao_responsavel, 
-        "responsavel_comercial": row.responsavel_comercial
-    }
+    try:
+        query = text("""
+            INSERT INTO patrocinadores (nome, email, tipo, orgao_responsavel, responsavel_comercial, telefone, nome_responsavel)
+            VALUES (:nome, :email, :tipo, :orgao_responsavel, :responsavel_comercial, :telefone, :nome_responsavel)
+            RETURNING id, nome, email, tipo, orgao_responsavel, responsavel_comercial, telefone, nome_responsavel
+        """)
+        params = {
+            "nome": patrocinador.nome,
+            "email": patrocinador.email,
+            "tipo": patrocinador.tipo,
+            "orgao_responsavel": patrocinador.orgao_responsavel,
+            "responsavel_comercial": patrocinador.responsavel_comercial,
+            "telefone": patrocinador.telefone,  # Adicionado
+            "nome_responsavel": patrocinador.nome_responsavel   # Adicionado
+        }
+        result = await db.execute(query, params)
+        row = result.fetchone()
+        await db.commit()
+
+        return {
+            "id": row.id,
+            "nome": row.nome,
+            "email": row.email,
+            "tipo": row.tipo,
+            "orgao_responsavel": row.orgao_responsavel,
+            "responsavel_comercial": row.responsavel_comercial,
+            "telefone": row.telefone,  # Adicionado
+            "nome_responsavel": row.nome_responsavel   # Adicionado
+        }
+
+    except Exception as e:
+        await db.rollback()  # Reverte a transação em caso de erro
+        raise e  # Levanta a exceção para ser tratada em nível superior
+
 
 # Função para buscar patrocinador
 async def get_patrocinador(db: AsyncSession, patrocinador_id: int):
@@ -65,6 +76,8 @@ async def update_patrocinador(db: AsyncSession, patrocinador_id: int, patrocinad
     db_patrocinador.tipo = TipoPatrocinador(patrocinador.tipo)  # Atualizando tipo (Enum)
     db_patrocinador.orgao_responsavel = patrocinador.orgao_responsavel
     db_patrocinador.responsavel_comercial = patrocinador.responsavel_comercial
+    db_patrocinador.telefone = patrocinador.telefone
+    db_patrocinador.nome_responsavel = patrocinador.nome_responsavel
 
     await db.commit()
     await db.refresh(db_patrocinador)
@@ -93,12 +106,71 @@ async def bulk_create_patrocinador(db: AsyncSession, patrocinadores: list[Patroc
     return db_patrocinadores
 
 
-
-# Função para buscar patrocinadores com uma substring no nome
 # Função para buscar patrocinadores por substring no nome
+# async def search_patrocinador_by_name(db: AsyncSession, nome_substring: str):
+#     result = await db.execute(
+#         select(Patrocinador).filter(Patrocinador.nome.ilike(f"%{nome_substring}%"))
+#     )
+#     patrocinadores = result.scalars().all()
+#     return patrocinadores
+
 async def search_patrocinador_by_name(db: AsyncSession, nome_substring: str):
-    result = await db.execute(
-        select(Patrocinador).filter(Patrocinador.nome.ilike(f"%{nome_substring}%"))
-    )
-    patrocinadores = result.scalars().all()
+    query = text("""
+        SELECT * 
+        FROM patrocinadores
+        WHERE nome ILIKE :nome_substring
+    """)
+    result = await db.execute(query, {"nome_substring": f"%{nome_substring}%"})
+    patrocinadores = result.fetchall()
     return patrocinadores
+
+
+#patrocinadores com valor acima da media 
+async def get_patrocinadores_com_valores_acima_da_media(db: AsyncSession):
+    """
+    Retorna todos os patrocinadores que têm patrocínios com valor superior à média dos seus próprios patrocínios.
+    """
+    query = text("""
+        SELECT p.id, p.nome, p.email
+        FROM patrocinadores p
+        WHERE p.id = ANY (
+            SELECT pt.patrocinador_id
+            FROM patrocinios pt
+            JOIN eventos e ON e.id = pt.evento_id
+            WHERE pt.valor > (
+                SELECT AVG(pt2.valor)
+                FROM patrocinios pt2
+                WHERE pt2.patrocinador_id = pt.patrocinador_id
+            )
+        )
+    """)
+
+    result = await db.execute(query)
+    patrocinadores = result.fetchall()  # Retorna patrocinadores que atendem à condição
+    return patrocinadores
+
+
+async def criar_gatilho_notificacao_patrocinador_privado(db: AsyncSession):
+    """
+    Cria um gatilho para notificar sobre a inserção de patrocinadores do tipo 'privado'.
+    """
+    query = text("""
+        CREATE OR REPLACE FUNCTION notificacao_patrocinador_privado()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            IF NEW.tipo = 'privado' THEN
+                INSERT INTO logs (mensagem, data_criacao)
+                VALUES ('Novo patrocinador privado inserido: ' || NEW.nome, CURRENT_TIMESTAMP);
+            END IF;
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+
+        CREATE TRIGGER trg_notificacao_patrocinador_privado
+        AFTER INSERT ON patrocinadores
+        FOR EACH ROW
+        EXECUTE FUNCTION notificacao_patrocinador_privado();
+    """)
+
+    await db.execute(query)
+    await db.commit()

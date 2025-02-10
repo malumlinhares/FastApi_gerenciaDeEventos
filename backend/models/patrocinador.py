@@ -1,10 +1,3 @@
-# backend/models/patrocinador.py
-from sqlalchemy import Column, Integer, String, Enum
-from sqlalchemy.orm import relationship
-from backend.config.database import Base
-import enum
-
-# backend/models/patrocinador.py
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import relationship
 from backend.config.database import Base
@@ -19,11 +12,15 @@ class Patrocinador(Base):
 
     id = Column(Integer, primary_key=True)
     nome = Column(String, nullable=False)
-    email = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
     tipo = Column(Enum(TipoPatrocinador, name="tipo_patrocinador", create_type=True), nullable=False)
     orgao_responsavel = Column(String, nullable=True)
     responsavel_comercial = Column(String, nullable=True)  # Apenas para patrocinadores privados
     
+    # Atributos opcionais adicionados
+    telefone = Column(String, nullable=True)  # Novo campo opcional
+    nome_responsavel = Column(String, nullable=True)  # Novo campo opcional
+
     # Relacionamento N:M com Eventos via Patrocinios
     patrocinio = relationship("Patrocinio", back_populates="patrocinador")
 

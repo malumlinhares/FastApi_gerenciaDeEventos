@@ -2,9 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from backend.models.certificado import Certificado
 from backend.schemas.certificado import CertificadoCreate
-from sqlalchemy import func
 from sqlalchemy import text
-from sqlalchemy import text
+from datetime import datetime
+from typing import Optional
 #usando bibliofeca
 # async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
 #     db_certificado = Certificado(
@@ -18,26 +18,40 @@ from sqlalchemy import text
 #     return db_certificado
 
 # usando sql nativo
+
 async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
-    query = text("""
-        INSERT INTO certificados (evento_id, participante_id, autenticador_id)
-        VALUES (:evento_id, :participante_id, :autenticador_id)
-        RETURNING id, evento_id, participante_id, autenticador_id
-    """)
-    params = {
-        "evento_id": certificado.evento_id,
-        "participante_id": certificado.participante_id,
-        "autenticador_id": certificado.autenticador_id
-    }
-    result = await db.execute(query, params)
-    row = result.fetchone()
-    await db.commit()
-    return {
-        "id": row.id,
-        "evento_id": row.evento_id,
-        "participante_id": row.participante_id,
-        "autenticador_id": row.autenticador_id
-    }
+    try:
+        query = text("""
+            INSERT INTO certificados (evento_id, participante_id, autenticador_id, data_emissao, codigo_verificacao)
+            VALUES (:evento_id, :participante_id, :autenticador_id, :data_emissao, :codigo_verificacao)
+            RETURNING id, evento_id, participante_id, autenticador_id, data_emissao, codigo_verificacao
+        """)
+
+        params = {
+            "evento_id": certificado.evento_id,
+            "participante_id": certificado.participante_id,
+            "autenticador_id": certificado.autenticador_id if certificado.autenticador_id is not None else None,  
+            "data_emissao": certificado.data_emissao if certificado.data_emissao is not None else datetime.utcnow(),
+            "codigo_verificacao": certificado.codigo_verificacao if certificado.codigo_verificacao is not None else None
+        }
+
+        result = await db.execute(query, params)
+        row = result.fetchone()
+        await db.commit()
+
+        return {
+            "id": row.id,
+            "evento_id": row.evento_id,
+            "participante_id": row.participante_id,
+            "autenticador_id": row.autenticador_id,
+            "data_emissao": row.data_emissao,
+            "codigo_verificacao": row.codigo_verificacao
+        }
+
+    except Exception as e:
+        await db.rollback()  # Reverte a transação em caso de falha
+        raise e  # Levanta a exceção para depuração ou mensagens de erro apropriadas
+
 
 
 async def get_certificado(db: AsyncSession, certificado_id: int):
@@ -53,6 +67,8 @@ async def update_certificado(db: AsyncSession, certificado_id: int, certificado:
     db_certificado.evento_id = certificado.evento_id
     db_certificado.participante_id = certificado.participante_id
     db_certificado.autenticador_id = certificado.autenticador_id
+    db_certificado.data_emissao = certificado.data_emissao
+    db_certificado.codigo_verificacao = certificado.codigo_verificacao
     await db.commit()
     await db.refresh(db_certificado)
     return db_certificado
@@ -77,20 +93,23 @@ async def bulk_create_certificado(db: AsyncSession, certificados: list[Certifica
     return db_certificados
 
 
+# async def count_certificados_por_participante(db: AsyncSession):
+#     query = (
+#         select(
+#             Certificado.participante_id,
+#             func.count(Certificado.id).label("total_certificados")
+#         )
+#         .group_by(Certificado.participante_id)
+#     )
+#     result = await db.execute(query)
+#     return result.all()
 
-from sqlalchemy import func
 
 async def count_certificados_por_participante(db: AsyncSession):
-    """
-    Conta o número de certificados emitidos por participante.
-    Retorna uma lista de dicionários com o ID do participante e a contagem de certificados.
-    """
-    query = (
-        select(
-            Certificado.participante_id,
-            func.count(Certificado.id).label("total_certificados")
-        )
-        .group_by(Certificado.participante_id)
-    )
+    query = text("""
+        SELECT participante_id, COUNT(id) AS total_certificados
+        FROM certificados
+        GROUP BY participante_id
+    """)
     result = await db.execute(query)
-    return result.all()
+    return result.fetchall()

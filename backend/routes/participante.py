@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.participante import ParticipanteCreate, ParticipanteResponse
-from backend.crud.participante import create_participante, get_participante, update_participante, delete_participante, bulk_create_participante, get_participantes_com_certificados_inner_join, get_participantes_com_certificados_left_join
+from backend.crud.participante import create_participante, get_participante, update_participante, delete_participante, bulk_create_participante, get_participantes_com_certificados_inner_join, get_participantes_com_certificados_left_join, get_participantes_ordenados, create_participante_com_endereco
 from typing import List, Dict
 
 router = APIRouter()
@@ -63,3 +63,22 @@ async def read_participantes_com_certificados_left(db: AsyncSession = Depends(ge
     Retorna todos os participantes, incluindo aqueles sem certificados (LEFT JOIN).
     """
     return await get_participantes_com_certificados_left_join(db)
+
+@router.get("/participantes/ordenados", response_model=List[ParticipanteResponse])
+async def read_participantes_ordenados(db: AsyncSession = Depends(get_db), ordem: str = 'ASC'):
+    """
+    Retorna todos os participantes ordenados pelo nome, permitindo a escolha da ordenação (ascendente ou descendente).
+    """
+    return await get_participantes_ordenados(db, ordem)
+
+from backend.schemas.endereco import EnderecoCreate
+@router.post("/participante-com-endereco")
+async def create_participante_com_endereco_route(
+    participante: ParticipanteCreate,
+    endereco: EnderecoCreate,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Cria um participante com um endereço associado.
+    """
+    return await create_participante_com_endereco(db, participante, endereco)
