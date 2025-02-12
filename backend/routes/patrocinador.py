@@ -2,10 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.patrocinador import PatrocinadorCreate, PatrocinadorResponse
-from backend.crud.patrocinador import create_patrocinador, get_patrocinador, delete_patrocinador, update_patrocinador, bulk_create_patrocinador, search_patrocinador_by_name, get_patrocinadores_com_valores_acima_da_media, criar_gatilho_notificacao_patrocinador_privado
+from backend.crud.patrocinador import create_patrocinador, get_patrocinador, delete_patrocinador, update_patrocinador, bulk_create_patrocinador, search_patrocinador_by_name, get_patrocinadores_com_valores_acima_da_media, criar_gatilho_notificacao_patrocinador_privado, get_all_patrocinadores
 from typing import List
 
 router = APIRouter()
+
+
+@router.get("/", response_model=List[PatrocinadorResponse])
+async def list_autenticadores(db: AsyncSession = Depends(get_db)):
+    autenticadores = await get_all_patrocinadores(db=db)  # Função que retorna todos os autenticadores
+    return autenticadores
 
 @router.post("/", response_model=PatrocinadorResponse)
 async def create_patrocinador_api(patrocinador: PatrocinadorCreate, db: AsyncSession = Depends(get_db)):

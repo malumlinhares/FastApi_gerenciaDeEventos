@@ -4,6 +4,10 @@ from backend.models.autenticador import Autenticador
 from backend.schemas.autenticador import AutenticadorCreate
 from sqlalchemy import text
 
+async def get_all_autenticadores(db: AsyncSession):
+    result = await db.execute(select(Autenticador))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
+
 #usando a biblioteca
 # async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate):
 #     db_autenticador = Autenticador(orgao=autenticador.orgao)

@@ -2,10 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.autenticador import AutenticadorCreate, AutenticadorResponse
-from backend.crud.autenticador import create_autenticador, get_autenticador, update_autenticador, delete_autenticador, bulk_create_autenticador
+from backend.crud.autenticador import create_autenticador, get_autenticador, update_autenticador, delete_autenticador, bulk_create_autenticador, get_all_autenticadores
 from typing import List
 
 router = APIRouter()
+
+@router.get("/", response_model=List[AutenticadorResponse])
+async def list_autenticadores(db: AsyncSession = Depends(get_db)):
+    autenticadores = await get_all_autenticadores(db=db)  # Função que retorna todos os autenticadores
+    return autenticadores
+
 
 @router.post("/", response_model=AutenticadorResponse)
 async def create_autenticador_api(autenticador: AutenticadorCreate, db: AsyncSession = Depends(get_db)):

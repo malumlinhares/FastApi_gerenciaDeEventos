@@ -2,10 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.participante import ParticipanteCreate, ParticipanteResponse
-from backend.crud.participante import create_participante, get_participante, update_participante, delete_participante, bulk_create_participante, get_participantes_com_certificados_inner_join, get_participantes_com_certificados_left_join, get_participantes_ordenados, create_participante_com_endereco
+from backend.crud.participante import create_participante, get_participante, update_participante, delete_participante, bulk_create_participante, get_participantes_com_certificados_inner_join, get_participantes_com_certificados_left_join, get_participantes_ordenados, create_participante_com_endereco, get_all_participantes
 from typing import List, Dict
 
 router = APIRouter()
+
+@router.get("/", response_model=List[ParticipanteResponse])
+async def list_autenticadores(db: AsyncSession = Depends(get_db)):
+    autenticadores = await get_all_participantes(db=db)  # Função que retorna todos os autenticadores
+    return autenticadores
 
 @router.post("/", response_model=ParticipanteResponse)
 async def create_participante_api(participante: ParticipanteCreate, db: AsyncSession = Depends(get_db)):

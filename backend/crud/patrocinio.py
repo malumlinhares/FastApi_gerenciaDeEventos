@@ -3,7 +3,11 @@ from backend.models.patrocinio import Patrocinio
 from backend.schemas.patrocinio import PatrocinioCreate
 from sqlalchemy.future import select
 from sqlalchemy import text
-from sqlalchemy import text
+
+
+async def get_all_patrocinios(db: AsyncSession):
+    result = await db.execute(select(Patrocinio))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
 
 # async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
 #     db_patrocinio = Patrocinio(

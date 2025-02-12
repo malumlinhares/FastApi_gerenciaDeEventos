@@ -4,6 +4,11 @@ from backend.models.endereco import Endereco
 from backend.schemas.endereco import EnderecoCreate
 from sqlalchemy import text
 
+
+async def get_all_enderecos(db: AsyncSession):
+    result = await db.execute(select(Endereco))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all()  
+
 #usando funcao pronta
 # async def create_endereco(db: AsyncSession, endereco: EnderecoCreate):
 #     db_endereco = Endereco(

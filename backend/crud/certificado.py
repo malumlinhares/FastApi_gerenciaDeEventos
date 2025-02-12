@@ -6,6 +6,9 @@ from sqlalchemy import text
 from datetime import datetime
 from typing import Optional
 
+async def get_all_certificados(db: AsyncSession):
+    result = await db.execute(select(Certificado))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
 #usando bibliofeca
 # async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
 #     db_certificado = Certificado(

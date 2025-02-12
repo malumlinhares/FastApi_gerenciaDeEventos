@@ -4,6 +4,10 @@ from backend.models.evento import Evento
 from backend.schemas.evento import EventoCreate, EventoResponse
 from sqlalchemy import text
 
+async def get_all_eventos(db: AsyncSession):
+    result = await db.execute(select(Evento))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
+
 #usando biblioteca
 
 # async def create_evento(db: AsyncSession, evento: EventoCreate):

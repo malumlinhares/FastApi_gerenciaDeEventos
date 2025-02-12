@@ -2,10 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.organizador import OrganizadorCreate, OrganizadorResponse
-from backend.crud.organizador import create_organizador, get_organizador, update_organizador, delete_organizador, bulk_create_organizador
+from backend.crud.organizador import create_organizador, get_organizador, update_organizador, delete_organizador, bulk_create_organizador, get_all_organizadores
 from typing import List
 
 router = APIRouter()
+@router.get("/", response_model=List[OrganizadorResponse])
+async def list_autenticadores(db: AsyncSession = Depends(get_db)):
+    autenticadores = await get_all_organizadores(db=db)  # Função que retorna todos os autenticadores
+    return autenticadores
+
 
 @router.post("/", response_model=OrganizadorResponse)
 async def create_organizador_api(organizador: OrganizadorCreate, db: AsyncSession = Depends(get_db)):

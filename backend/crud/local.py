@@ -4,6 +4,10 @@ from backend.models.local import Local
 from backend.schemas.local import LocalCreate
 from sqlalchemy import text
 
+async def get_all_locais(db: AsyncSession):
+    result = await db.execute(select(Local))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
+
 # async def create_local(db: AsyncSession, local: LocalCreate):
 #     db_local = Local(
 #         cidade=local.cidade, 

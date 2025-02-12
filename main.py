@@ -9,6 +9,7 @@ from backend.routes import (
 )
 from contextlib import asynccontextmanager
 
+from fastapi.middleware.cors import CORSMiddleware
 
 
 DB_USER = os.getenv("POSTGRES_USER", "admin")
@@ -17,7 +18,6 @@ DB_HOST = os.getenv("POSTGRES_HOST", "localhost")  # Altere aqui, pode ser "loca
 DB_PORT = os.getenv("POSTGRES_PORT", "5432")
 DB_NAME = os.getenv("POSTGRES_DB", "ProjetoDB")
 
-# print(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
 
 
 # Adiciona o diretório raiz ao PYTHONPATH
@@ -28,6 +28,13 @@ app = FastAPI(
     title="Minha API FastAPI",
     description="Gerencia Público e Patrocinadores",
     version="1.0.0"
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Pode ser ["http://localhost:5173"] para mais segurança
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Definindo o Lifespan para inicialização e desligamento

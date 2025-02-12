@@ -2,10 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.inscricao import InscricaoCreate, InscricaoResponse
-from backend.crud.inscricao import create_inscricao, get_inscricao, update_inscricao, delete_inscricao, bulk_create_inscricao
+from backend.crud.inscricao import create_inscricao, get_inscricao, update_inscricao, delete_inscricao, bulk_create_inscricao, get_all_inscricoes
 from typing import List
 
 router = APIRouter()
+
+@router.get("/", response_model=List[InscricaoResponse])
+async def list_autenticadores(db: AsyncSession = Depends(get_db)):
+    autenticadores = await get_all_inscricoes(db=db)  # Função que retorna todos os autenticadores
+    return autenticadores
 
 @router.post("/", response_model=InscricaoResponse)
 async def create_inscricao_api(inscricao: InscricaoCreate, db: AsyncSession = Depends(get_db)):

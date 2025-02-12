@@ -4,6 +4,10 @@ from backend.models.organizador import Organizador
 from backend.schemas.organizador import OrganizadorCreate
 from sqlalchemy import text
 
+async def get_all_organizadores(db: AsyncSession):
+    result = await db.execute(select(Organizador))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
+
 # async def create_organizador(db: AsyncSession, organizador: OrganizadorCreate):
 #     db_organizador = Organizador(
 #         nome=organizador.nome,  # Preencher com os dados recebidos

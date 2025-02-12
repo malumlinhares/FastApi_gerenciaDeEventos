@@ -2,10 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.certificado import CertificadoCreate, CertificadoResponse
-from backend.crud.certificado import create_certificado, get_certificado, update_certificado, delete_certificado, bulk_create_certificado, count_certificados_por_participante
+from backend.crud.certificado import create_certificado, get_certificado, update_certificado, delete_certificado, bulk_create_certificado, count_certificados_por_participante, get_all_certificados
 from typing import List, Dict
 
 router = APIRouter()
+
+@router.get("/", response_model=List[CertificadoResponse])
+async def list_certificados(db: AsyncSession = Depends(get_db)):
+    autenticadores = await get_all_certificados(db=db)  # Função que retorna todos os autenticadores
+    return autenticadores
 
 @router.post("/", response_model=CertificadoResponse)
 async def create_certificado_api(certificado: CertificadoCreate, db: AsyncSession = Depends(get_db)):

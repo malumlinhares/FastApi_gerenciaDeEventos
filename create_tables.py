@@ -15,7 +15,7 @@ from backend.models.patrocinio import Patrocinio
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Configuração do banco de dados
-DATABASE_URL = "postgresql+asyncpg://admin:123456@localhost/EventsDB"
+DATABASE_URL = "postgresql+asyncpg://admin:123456@localhost/ProjetoDB"
 
 # Criando o motor assíncrono e a sessão
 engine = create_async_engine(DATABASE_URL, echo=True)

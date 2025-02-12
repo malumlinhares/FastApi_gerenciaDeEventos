@@ -9,6 +9,9 @@ from backend.models.certificado import Certificado
 from sqlalchemy import text
 # from sqlalchemy.orm import joinedload
 
+async def get_all_participantes(db: AsyncSession):
+    result = await db.execute(select(Participante))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
 
 # async def create_participante(db: AsyncSession, participante: ParticipanteCreate):
 #     db_participante = Participante(

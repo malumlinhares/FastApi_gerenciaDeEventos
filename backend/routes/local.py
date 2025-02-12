@@ -2,10 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.local import LocalCreate, LocalResponse
-from backend.crud.local import create_local, get_local, update_local, delete_local, bulk_create_local
+from backend.crud.local import create_local, get_local, update_local, delete_local, bulk_create_local, get_all_locais
 from typing import List
 
 router = APIRouter()
+
+
+@router.get("/", response_model=List[LocalResponse])
+async def list_autenticadores(db: AsyncSession = Depends(get_db)):
+    autenticadores = await get_all_locais(db=db)  # Função que retorna todos os autenticadores
+    return autenticadores
+
 
 @router.post("/", response_model=LocalResponse)
 async def create_local_api(local: LocalCreate, db: AsyncSession = Depends(get_db)):

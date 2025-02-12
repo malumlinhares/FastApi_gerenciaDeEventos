@@ -4,6 +4,12 @@ from backend.models.inscricao import Inscricao
 from backend.schemas.inscricao import InscricaoCreate
 from sqlalchemy import text
 
+
+async def get_all_inscricoes(db: AsyncSession):
+    result = await db.execute(select(Inscricao))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
+
+
 # async def create_inscricao(db: AsyncSession, inscricao: InscricaoCreate):
 #     db_inscricao = Inscricao(
 #         status=inscricao.status,

@@ -3,6 +3,10 @@ from backend.models.patrocinador import Patrocinador, TipoPatrocinador
 from backend.schemas.patrocinador import PatrocinadorCreate
 from sqlalchemy.future import select
 from sqlalchemy import text
+async def get_all_patrocinadores(db: AsyncSession):
+    result = await db.execute(select(Patrocinador))  # Executa a consulta para buscar todos os autenticadores
+    return result.scalars().all() 
+
 
 # Função para criar patrocinador
 # async def create_patrocinador(db: AsyncSession, patrocinador: PatrocinadorCreate):

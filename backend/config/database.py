@@ -15,7 +15,7 @@ def get_database_url() -> str:
     password = os.getenv("POSTGRES_PASSWORD", "123456")  
     host = os.getenv("DB_HOST", "localhost")  
     port = os.getenv("DB_PORT", 5432)  
-    database = os.getenv("POSTGRES_DB", "EventsDB") 
+    database = os.getenv("POSTGRES_DB", "ProjetoDB") 
     return f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
 
 async def drop_tables():

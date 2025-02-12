@@ -2,10 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config.database import get_db
 from backend.schemas.endereco import EnderecoCreate, EnderecoResponse
-from backend.crud.endereco import create_endereco, get_endereco, update_endereco, delete_endereco, bulk_create_endereco
+from backend.crud.endereco import create_endereco, get_endereco, update_endereco, delete_endereco, bulk_create_endereco, get_all_enderecos
 from typing import List
 
 router = APIRouter()
+
+@router.get("/", response_model=List[EnderecoResponse])
+async def list_enderecos(db: AsyncSession = Depends(get_db)):
+    autenticadores = await get_all_enderecos(db=db) 
+    return autenticadores
 
 @router.post("/", response_model=EnderecoResponse)
 async def create_endereco_api(endereco: EnderecoCreate, db: AsyncSession = Depends(get_db)):
