@@ -8,11 +8,8 @@ CREATE TABLE patrocinadores (
         telefone VARCHAR, 
         nome_responsavel VARCHAR, 
         PRIMARY KEY (id), 
-        UNIQUE (email), 
-        UNIQUE (orgao_responsavel), 
-        UNIQUE (responsavel_comercial)
+        UNIQUE (email)
 );
-
 
 CREATE TABLE organizadores (
         id SERIAL NOT NULL, 
@@ -23,8 +20,6 @@ CREATE TABLE organizadores (
         nome_contato VARCHAR, 
         PRIMARY KEY (id)
 );
-
-
 CREATE TABLE locais (
         id SERIAL NOT NULL, 
         cidade VARCHAR NOT NULL, 
@@ -33,20 +28,16 @@ CREATE TABLE locais (
         descricao VARCHAR, 
         PRIMARY KEY (id)
 );
-
-
 CREATE TABLE autenticadores (
         id SERIAL NOT NULL, 
         chave_autenticacao VARCHAR NOT NULL, 
         orgao VARCHAR NOT NULL, 
         status VARCHAR, 
-        data_expiracao TIMESTAMP WITHOUT TIME ZONE, 
+        data_expiracao DATE, 
         PRIMARY KEY (id), 
         UNIQUE (chave_autenticacao), 
         UNIQUE (orgao)
 );
-
-
 CREATE TABLE enderecos (
         id SERIAL NOT NULL, 
         rua VARCHAR NOT NULL, 
@@ -56,7 +47,6 @@ CREATE TABLE enderecos (
         ponto_de_referencia VARCHAR, 
         PRIMARY KEY (id)
 );
-
 
 CREATE TABLE eventos (
         id SERIAL NOT NULL, 
@@ -72,7 +62,6 @@ CREATE TABLE eventos (
         FOREIGN KEY(local_id) REFERENCES locais (id), 
         FOREIGN KEY(organizador_id) REFERENCES organizadores (id)
 );
-
 
 CREATE TABLE participantes (
         id SERIAL NOT NULL, 
@@ -91,19 +80,19 @@ CREATE TABLE participantes (
 );
 
 CREATE TABLE certificados (
-        id SERIAL NOT NULL, 
-        evento_id INTEGER NOT NULL, 
-        participante_id INTEGER NOT NULL, 
-        autenticador_id INTEGER, 
-        data_emissao TIMESTAMP WITHOUT TIME ZONE, 
-        codigo_verificacao VARCHAR, 
-        PRIMARY KEY (id), 
-        FOREIGN KEY(evento_id) REFERENCES eventos (id), 
-        FOREIGN KEY(participante_id) REFERENCES participantes (id), 
-        FOREIGN KEY(autenticador_id) REFERENCES autenticadores (id), 
-        UNIQUE (codigo_verificacao)
+    id SERIAL NOT NULL, 
+    evento_id INTEGER NOT NULL, 
+    participante_id INTEGER NOT NULL, 
+    autenticador_id INTEGER, 
+    data_emissao DATE, 
+    codigo_verificacao VARCHAR, 
+    PRIMARY KEY (id), 
+    FOREIGN KEY(evento_id) REFERENCES eventos (id), 
+    FOREIGN KEY(participante_id) REFERENCES participantes (id), 
+    FOREIGN KEY(autenticador_id) REFERENCES autenticadores (id), 
+    UNIQUE (codigo_verificacao), 
+    UNIQUE (evento_id, participante_id, autenticador_id)  -- Adicionando a restrição de unicidade
 );
-
 
 CREATE TABLE inscricao (
         numero_inscricao SERIAL NOT NULL, 

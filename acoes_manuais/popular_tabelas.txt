@@ -1,0 +1,125 @@
+INSERT INTO locais (cidade, nome, estado, descricao) VALUES
+('São Paulo', 'Centro de Eventos SP', 'SP', 'Espaço amplo para conferências.'),
+('Rio de Janeiro', 'Auditório RJ', 'RJ', 'Auditório moderno e equipado.'),
+('Belo Horizonte', 'Expo Minas', 'MG', 'Centro de exposições em BH.'),
+('Fortaleza', 'Centro Cultural Fortaleza', 'CE', 'Local para eventos culturais.'),
+('Recife', 'Arena Recife', 'PE', 'Grande arena multiuso.'),
+('Porto Alegre', 'Teatro Porto Alegre', 'RS', 'Espaço cultural e eventos.'),
+('Curitiba', 'Pavilhão Curitiba', 'PR', 'Centro de convenções.'),
+('Brasília', 'Palácio de Convenções', 'DF', 'Espaço para grandes eventos.'),
+('Salvador', 'Centro de Eventos SSA', 'BA', 'Centro de convenções em Salvador.'),
+('Manaus', 'Auditório Amazonas', 'AM', 'Auditório de alta tecnologia.');
+
+INSERT INTO organizadores (nome, email, cnpj, telefone, nome_contato) VALUES
+('Eventos SP', 'eventossp@email.com', '12345678000101', '11999999999', 'Carlos Silva'),
+('Eventos RJ', 'eventosrj@email.com', '12345678000102', '21999999999', 'Ana Souza'),
+('Eventos MG', 'eventosmg@email.com', '12345678000103', '31999999999', 'Marcos Lima'),
+('Eventos CE', 'eventosce@email.com', '12345678000104', '85999999999', 'Rita Costa'),
+('Eventos PE', 'eventospe@email.com', '12345678000105', '81999999999', 'Pedro Rocha'),
+('Eventos RS', 'eventosrs@email.com', '12345678000106', '51999999999', 'João Mendes'),
+('Eventos PR', 'eventospr@email.com', '12345678000107', '41999999999', 'Clara Azevedo'),
+('Eventos DF', 'eventosdf@email.com', '12345678000108', '61999999999', 'Lucas Nunes'),
+('Eventos BA', 'eventosba@email.com', '12345678000109', '71999999999', 'Sofia Fernandes'),
+('Eventos AM', 'eventosam@email.com', '12345678000110', '92999999999', 'Bruno Oliveira');
+
+INSERT INTO eventos (nome, categoria, data, numerohoras, local_id, organizador_id, descricao, limite_participantes) VALUES
+('Tech Conference', 'Tecnologia', '2025-03-15', 8, 1, 1, 'Conferência de tecnologia.', 500),
+('Saúde e Bem-estar', 'Saúde', '2025-04-10', 6, 2, 2, 'Evento sobre saúde e bem-estar.', 300),
+('Empreendedorismo 2025', 'Negócios', '2025-05-20', 10, 3, 3, 'Conferência sobre startups.', 400),
+('Música ao Vivo', 'Entretenimento', '2025-06-25', 5, 4, 4, 'Show e apresentações ao vivo.', 700),
+('Feira do Livro', 'Educação', '2025-07-15', 6, 5, 5, 'Feira com autores e editoras.', 600),
+('Hackathon Nacional', 'Tecnologia', '2025-08-10', 24, 6, 6, 'Competição de programação.', 200),
+('Congresso Jurídico', 'Direito', '2025-09-05', 8, 7, 7, 'Discussões sobre legislação.', 250),
+('Festival de Cinema', 'Cultura', '2025-10-20', 12, 8, 8, 'Mostra de filmes nacionais.', 500),
+('Fórum de Sustentabilidade', 'Meio Ambiente', '2025-11-10', 7, 9, 9, 'Palestras sobre sustentabilidade.', 350),
+('Congresso de Engenharia', 'Engenharia', '2025-12-05', 9, 10, 10, 'Discussões sobre inovação na engenharia.', 450);
+
+INSERT INTO patrocinadores (nome, email, tipo, orgao_responsavel, responsavel_comercial, telefone, nome_responsavel) VALUES
+('Empresa A', 'patrocinioA@email.com', 'privado', NULL, 'João Silva', '11988887777', 'Maria Oliveira'),
+('Empresa B', 'patrocinioB@email.com', 'publico', 'Ministério da Cultura', NULL, '21988887777', 'Ana Souza'),
+('Empresa C', 'patrocinioC@email.com', 'privado', NULL, 'Fernanda Lima', '31988887777', 'Ricardo Gomes'),
+('Empresa D', 'patrocinioD@email.com', 'publico', 'Prefeitura RJ', NULL, '85988887777', 'Cláudia Torres'),
+('Empresa E', 'patrocinioE@email.com', 'privado', NULL, 'Sônia Medeiros', '81988887777', 'Roberto Nunes'),
+('Empresa F', 'patrocinioF@email.com', 'privado', NULL, 'Henrique Castro', '51988887777', 'Letícia Carvalho'),
+('Empresa G', 'patrocinioG@email.com', 'publico', 'Secretaria de Ciência e Tecnologia', NULL, '41988887777', 'Sérgio Almeida'),
+('Empresa H', 'patrocinioH@email.com', 'privado', NULL, 'Gabriela Lopes', '61988887777', 'Paula Mendes'),
+('Empresa I', 'patrocinioI@email.com', 'publico', 'Ministério do Turismo', NULL, '71988887777', 'Eduardo Lima'),
+('Empresa J', 'patrocinioJ@email.com', 'privado', NULL, 'Tatiane Moreira', '92988887777', 'Júlio César');
+
+
+INSERT INTO enderecos (rua, cep, numero, complemento, ponto_de_referencia) VALUES
+('Av. Paulista', '01310-100', 1000, 'Sala 101', 'Próximo ao MASP'),
+('Rua das Flores', '20031-010', 500, NULL, 'Ao lado do metrô'),
+('Alameda Santos', '01419-001', 1200, 'Bloco B', 'Em frente ao shopping'),
+('Rua Augusta', '01304-001', 650, NULL, 'Próximo à Av. Paulista'),
+('Av. Brasil', '22041-010', 900, NULL, 'Perto da praia'),
+('Rua XV de Novembro', '80020-310', 300, NULL, 'Centro Histórico'),
+('Av. das Nações', '70150-000', 1500, NULL, 'Próximo ao Palácio do Planalto'),
+('Rua Chile', '40020-000', 450, NULL, 'Centro Antigo'),
+('Av. Sete de Setembro', '40110-000', 750, NULL, 'Próximo ao Farol da Barra'),
+('Rua Amazonas', '69010-020', 550, NULL, 'Perto do Teatro Amazonas');
+
+INSERT INTO participantes (nome, email, tipo, anuidade, elegivel_upgrade, endereco_id, telefone, responsavel) VALUES
+('Lucas Souza', 'lucas@email.com', 'Estudante', 100, 1, 1, '11998877665', 'José Souza'),
+('Mariana Lima', 'mariana@email.com', 'Profissional', 200, 0, 2, '21998877665', 'Paula Lima'),
+('Carlos Oliveira', 'carlos@email.com', 'Estudante', 100, 1, 3, '31998877665', 'Maria Oliveira'),
+('Ana Mendes', 'ana@email.com', 'Profissional', 200, 0, 4, '85998877665', 'Ricardo Mendes'),
+('Pedro Henrique', 'pedro@email.com', 'Estudante', 100, 1, 5, '81998877665', 'Marcos Henrique'),
+('Juliana Alves', 'juliana@email.com', 'Profissional', 200, 0, 6, '51998877665', 'Clara Alves'),
+('Fernando Castro', 'fernando@email.com', 'Estudante', 100, 1, 7, '41998877665', 'Patrícia Castro'),
+('Beatriz Fernandes', 'beatriz@email.com', 'Profissional', 200, 0, 8, '61998877665', 'Rodrigo Fernandes'),
+('Thiago Nunes', 'thiago@email.com', 'Estudante', 100, 1, 9, '71998877665', 'Helena Nunes'),
+('Camila Rocha', 'camila@email.com', 'Profissional', 200, 0, 10, '92998877665', 'Fábio Rocha');
+
+
+INSERT INTO patrocinios (valor, descricao, evento_id, patrocinador_id, status, observacao) 
+VALUES 
+    (5000.00, 'Patrocínio principal para evento de tecnologia', 1, 2, 'Ativo', 'Acordo firmado com a empresa X.'),
+    (3000.00, 'Patrocínio de alimentação durante o evento', 2, 3, 'Ativo', 'Inclui fornecimento de lanches.'),
+    (1500.00, 'Patrocínio para brindes e sorteios', 1, 4, 'Inativo', 'Aguardando contrato.'),
+    (8000.00, 'Patrocínio para evento cultural', 3, 5, 'Ativo', 'Envolvimento com a promoção de arte local.'),
+    (2000.00, 'Patrocínio para evento esportivo', 4, 6, 'Ativo', 'Focando no apoio à saúde e bem-estar.'),
+    (4500.00, 'Patrocínio de transporte para participantes', 2, 7, 'Ativo', 'Transporte de ida e volta para o evento.'),
+    (6000.00, 'Patrocínio de mídia e publicidade', 5, 8, 'Ativo', 'Campanha de mídia online e offline.'),
+    (1200.00, 'Patrocínio para decoração e ambientação', 6, 9, 'Inativo', 'Aguardando ajustes no projeto.'),
+    (2500.00, 'Patrocínio de equipamentos e infraestrutura', 7, 10, 'Ativo', 'Cobre o aluguel de equipamentos de som e luz.'),
+    (10000.00, 'Patrocínio de palestras e workshops', 8, 1, 'Ativo', 'Patrocínio completo das atividades do evento.');
+
+INSERT INTO inscricao (status, forma_pagamento, valor, participante_id, data_pagamento, observacao) VALUES
+('Pendente', 'Cartão de Crédito', 150.00, 1, '2025-02-01 10:00:00', 'Pagamento via cartão de crédito'),
+('Pendente', 'Boleto Bancário', 200.00, 2, NULL, 'Aguardando pagamento'),
+('Confirmado', 'Transferência Bancária', 120.00, 3, '2025-02-02 12:30:00', 'Pagamento confirmado'),
+('Pendente', 'Dinheiro', 180.00, 4, NULL, 'Aguardando pagamento'),
+('Confirmado', 'Cartão de Crédito', 250.00, 5, '2025-02-03 14:00:00', 'Pagamento confirmado'),
+('Pendente', 'Boleto Bancário', 220.00, 6, NULL, 'Aguardando pagamento'),
+('Confirmado', 'Transferência Bancária', 170.00, 7, '2025-02-04 15:30:00', 'Pagamento confirmado'),
+('Pendente', 'Cartão de Crédito', 210.00, 8, NULL, 'Aguardando pagamento'),
+('Confirmado', 'Dinheiro', 190.00, 9, '2025-02-05 16:00:00', 'Pagamento confirmado'),
+('Pendente', 'Boleto Bancário', 160.00, 10, NULL, 'Aguardando pagamento');
+
+
+INSERT INTO autenticadores (chave_autenticacao, orgao, status, data_expiracao) 
+VALUES 
+    ('AUTH001', 'Instituto Nacional de Certificação', 'Ativo', '2026-12-31'),
+    ('AUTH002', 'Conselho Federal de Educação', 'Ativo', '2025-11-15'),
+    ('AUTH003', 'Ministério da Ciência e Tecnologia', 'Inativo', '2024-09-30'),
+    ('AUTH004', 'Secretaria Estadual de Pesquisa', 'Ativo', '2027-03-20'),
+    ('AUTH005', 'Agência Nacional de Tecnologia', 'Ativo', '2026-06-10'),
+    ('AUTH006', 'Departamento de Segurança Digital', 'Ativo', '2026-09-05'),
+    ('AUTH007', 'Comissão de Certificação Nacional', 'Inativo', '2024-10-15'),
+    ('AUTH008', 'Centro de Autenticação Oficial', 'Ativo', '2027-01-30'),
+    ('AUTH009', 'Agência de Regulação e Certificação', 'Ativo', '2025-12-01'),
+    ('AUTH010', 'Instituto de Normas Técnicas', 'Ativo', '2026-03-10');
+
+INSERT INTO certificados (evento_id, participante_id, autenticador_id, data_emissao, codigo_verificacao) 
+VALUES 
+    (1, 1, 1, '2024-07-10', 'CERT-001'),
+    (2, 2, 2, '2024-07-15', 'CERT-002'),
+    (3, 3, 3, '2024-08-01', 'CERT-003'),
+    (4, 4, 4, '2024-08-10', 'CERT-004'),
+    (5, 5, 5, '2024-08-20', 'CERT-005'),
+    (6, 6, 6, '2024-08-25', 'CERT-006'),
+    (7, 7, 7, '2024-09-01', 'CERT-007'),
+    (8, 8, 8, '2024-09-05', 'CERT-008'),
+    (9, 9, 9, '2024-09-10', 'CERT-009'),
+    (10, 10, 10, '2024-09-15', 'CERT-010');

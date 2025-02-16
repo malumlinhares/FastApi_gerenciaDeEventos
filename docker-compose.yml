@@ -13,7 +13,7 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: EventsDB
+      POSTGRES_DB: ProjetoDB
 
   pgadmin:
     image: dpage/pgadmin4
