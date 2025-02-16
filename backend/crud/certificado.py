@@ -7,21 +7,9 @@ from datetime import datetime
 from typing import Optional
 
 async def get_all_certificados(db: AsyncSession):
-    result = await db.execute(select(Certificado))  # Executa a consulta para buscar todos os autenticadores
+    result = await db.execute(select(Certificado))  
     return result.scalars().all() 
-#usando bibliofeca
-# async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
-#     db_certificado = Certificado(
-#         evento_id=certificado.evento_id,
-#         participante_id=certificado.participante_id,
-#         autenticador_id=certificado.autenticador_id
-#     )
-#     db.add(db_certificado)
-#     await db.commit()
-#     await db.refresh(db_certificado)
-#     return db_certificado
 
-# usando sql nativo
 async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
     try:
         query = text("""
@@ -54,7 +42,6 @@ async def create_certificado(db: AsyncSession, certificado: CertificadoCreate):
     except Exception as e:
         await db.rollback() 
         raise e  
-
 
 
 async def get_certificado(db: AsyncSession, certificado_id: int):
@@ -95,18 +82,7 @@ async def bulk_create_certificado(db: AsyncSession, certificados: list[Certifica
     return db_certificados
 
 
-# async def count_certificados_por_participante(db: AsyncSession):
-#     query = (
-#         select(
-#             Certificado.participante_id,
-#             func.count(Certificado.id).label("total_certificados")
-#         )
-#         .group_by(Certificado.participante_id)
-#     )
-#     result = await db.execute(query)
-#     return result.all()
-
-
+#conta quantos certificaods por participante 
 async def count_certificados_por_participante(db: AsyncSession):
     query = text("""
         SELECT participante_id, COUNT(id) AS total_certificados

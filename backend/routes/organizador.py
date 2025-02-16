@@ -8,7 +8,7 @@ from typing import List
 router = APIRouter()
 @router.get("/", response_model=List[OrganizadorResponse])
 async def list_autenticadores(db: AsyncSession = Depends(get_db)):
-    autenticadores = await get_all_organizadores(db=db)  # Função que retorna todos os autenticadores
+    autenticadores = await get_all_organizadores(db=db)  
     return autenticadores
 
 

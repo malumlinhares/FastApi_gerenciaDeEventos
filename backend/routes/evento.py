@@ -11,13 +11,12 @@ from backend.crud.evento import (
     create_evento, get_evento, update_evento, delete_evento,
     bulk_create_evento, get_eventos_com_patrocinios, get_all_eventos
 )
-
 router = APIRouter()
 
 
 @router.get("/", response_model=List[EventoResponse])
 async def list_autenticadores(db: AsyncSession = Depends(get_db)):
-    autenticadores = await get_all_eventos(db=db)  # Função que retorna todos os autenticadores
+    autenticadores = await get_all_eventos(db=db) 
     return autenticadores
 
 @router.post("/", response_model=EventoResponse)
@@ -55,8 +54,6 @@ async def delete_evento_api(
     
     return db_evento
 
-
-# Operações em massa
 @router.post("/bulk", response_model=List[EventoResponse])
 async def bulk_create_eventos(
     eventos: List[EventoCreate], 
@@ -69,8 +66,5 @@ async def bulk_create_eventos(
 
 @router.get("/eventos/com-patrocinios", response_model=List[EventoResponse])
 async def read_eventos_com_patrocinios(db: AsyncSession = Depends(get_db)):
-    """
-    Retorna os eventos com a quantidade e o valor total dos patrocínios, 
-    filtrando para incluir apenas eventos com mais de 3 patrocínios.
-    """
+
     return await get_eventos_com_patrocinios(db)

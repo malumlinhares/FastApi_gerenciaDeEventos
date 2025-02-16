@@ -5,26 +5,9 @@ from backend.schemas.evento import EventoCreate, EventoResponse
 from sqlalchemy import text
 
 async def get_all_eventos(db: AsyncSession):
-    result = await db.execute(select(Evento))  # Executa a consulta para buscar todos os autenticadores
+    result = await db.execute(select(Evento))  
     return result.scalars().all() 
 
-#usando biblioteca
-
-# async def create_evento(db: AsyncSession, evento: EventoCreate):
-#     db_evento = Evento(
-#         nome=evento.nome,  # Preencher com os dados recebidos
-#         categoria = evento.categoria, 
-#         data = evento.data, 
-#         numerohoras = evento.numerohoras, 
-#         local_id = evento.local_id,
-#         organizador_id = evento.organizador_id
-#     )
-#     db.add(db_evento)
-#     await db.commit()
-#     await db.refresh(db_evento)
-#     return db_evento  # Retorne o objeto lvento, FastAPI cuidará da conversão
-
-# usando sql nativo
 async def create_evento(db: AsyncSession, evento: EventoCreate):
     try:
         query = text("""
@@ -113,11 +96,9 @@ async def bulk_create_evento(db: AsyncSession, eventos: list[EventoCreate]):
         await db.refresh(evento)
     return db_eventos
 
+
+# Retorna os eventos com a quantidade e o valor total dos patrocínios, filtrando para incluir apenas eventos com mais de 3 patrocínios.
 async def get_eventos_com_patrocinios(db: AsyncSession):
-    """
-    Retorna os eventos com a quantidade e o valor total dos patrocínios, 
-    filtrando para incluir apenas eventos com mais de 3 patrocínios.
-    """
     query = text("""
         SELECT e.id, e.nome, COUNT(pt.id) AS quantidade_patrocinios, SUM(pt.valor) AS total_valor_patrocinios
         FROM eventos e
@@ -126,7 +107,6 @@ async def get_eventos_com_patrocinios(db: AsyncSession):
         HAVING COUNT(pt.id) > 3
         ORDER BY total_valor_patrocinios DESC
     """)
-
     result = await db.execute(query)
     eventos = result.fetchall()  
     return eventos

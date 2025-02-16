@@ -8,22 +8,18 @@ from backend.routes import (
     participante
 )
 from contextlib import asynccontextmanager
-
 from fastapi.middleware.cors import CORSMiddleware
 
 
 DB_USER = os.getenv("POSTGRES_USER", "admin")
 DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "123456")
-DB_HOST = os.getenv("POSTGRES_HOST", "localhost")  # Altere aqui, pode ser "localhost" ou IP do seu computador
+DB_HOST = os.getenv("POSTGRES_HOST", "localhost")  
 DB_PORT = os.getenv("POSTGRES_PORT", "5432")
 DB_NAME = os.getenv("POSTGRES_DB", "ProjetoDB")
 
 
-
-# Adiciona o diretório raiz ao PYTHONPATH
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Inicialização do FastAPI
 app = FastAPI(
     title="Minha API FastAPI",
     description="Gerencia Público e Patrocinadores",
@@ -31,41 +27,30 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Pode ser ["http://localhost:5173"] para mais segurança
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Definindo o Lifespan para inicialização e desligamento
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lógica de inicialização e finalização da aplicação"""
-    
-    # Criar a string DSN para a conexão com o banco de dados
     dsn = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-    # Testa a conexão ao banco de dados
     connection_successful = await test_connection(dsn=dsn)
-    
     if connection_successful:
         print("Banco de dados conectado com sucesso!")
     else:
         print("Falha ao conectar com o banco de dados.")
-    
-    # Criar as tabelas se a conexão for bem-sucedida
     if connection_successful:
         await create_tables()
 
-    yield  # Isso indica que o FastAPI pode começar a aceitar requisições
+    yield  
     
-    # Lógica de finalização da aplicação (se necessário)
     print("Finalizando aplicação.")
 
-# Configurando o Lifespan no FastAPI
 app.lifespan = lifespan
 
-# Incluindo as rotas organizadas
+
 app.include_router(patrocinador.router, prefix="/patrocinadores", tags=["Patrocinadores"])
 app.include_router(organizador.router, prefix="/organizadores", tags=["Organizadores"])
 app.include_router(local.router, prefix="/locais", tags=["Locais"])

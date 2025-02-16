@@ -6,21 +6,9 @@ from sqlalchemy import text
 
 
 async def get_all_inscricoes(db: AsyncSession):
-    result = await db.execute(select(Inscricao))  # Executa a consulta para buscar todos os autenticadores
+    result = await db.execute(select(Inscricao))  
     return result.scalars().all() 
 
-
-# async def create_inscricao(db: AsyncSession, inscricao: InscricaoCreate):
-#     db_inscricao = Inscricao(
-#         status=inscricao.status,
-#         forma_pagamento=inscricao.forma_pagamento,
-#         valor=inscricao.valor,
-#         participante_id=inscricao.participante_id,
-#     )
-#     db.add(db_inscricao)
-#     await db.commit()
-#     await db.refresh(db_inscricao)
-#     return db_inscricao
 
 async def create_inscricao(db: AsyncSession, inscricao: InscricaoCreate):
     try:
@@ -29,7 +17,6 @@ async def create_inscricao(db: AsyncSession, inscricao: InscricaoCreate):
             VALUES (COALESCE(:status, 'Pendente'), :forma_pagamento, :valor, :participante_id, :data_pagamento, :observacao)
             RETURNING numero_inscricao, status, forma_pagamento, valor, participante_id, data_pagamento, observacao
         """)
-        
         params = {
             "status": inscricao.status or 'Pendente',  
             "forma_pagamento": inscricao.forma_pagamento,
@@ -38,11 +25,9 @@ async def create_inscricao(db: AsyncSession, inscricao: InscricaoCreate):
             "data_pagamento": inscricao.data_pagamento,  
             "observacao": inscricao.observacao  
         }
-
         result = await db.execute(query, params)
         row = result.fetchone()
         await db.commit()
-        
         return {
             "numero_inscricao": row.numero_inscricao,
             "status": row.status,
@@ -52,7 +37,6 @@ async def create_inscricao(db: AsyncSession, inscricao: InscricaoCreate):
             "data_pagamento": row.data_pagamento, 
             "observacao": row.observacao  
         }
-
     except Exception as e:
         await db.rollback()  
         raise e  

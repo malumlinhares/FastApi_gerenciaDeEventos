@@ -6,19 +6,8 @@ from sqlalchemy import text
 
 
 async def get_all_patrocinios(db: AsyncSession):
-    result = await db.execute(select(Patrocinio))  # Executa a consulta para buscar todos os autenticadores
+    result = await db.execute(select(Patrocinio)) 
     return result.scalars().all() 
-
-# async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
-#     db_patrocinio = Patrocinio(
-#         valor=patrocinio.valor, descricao = patrocinio.descricao, 
-#         patrocinador_id=patrocinio.patrocinador_id, 
-#         evento_id=patrocinio.evento_id)
-#     db.add(db_patrocinio)
-#     await db.commit()
-#     await db.refresh(db_patrocinio)
-#     return db_patrocinio
-
 
 async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
     try:
@@ -52,7 +41,6 @@ async def create_patrocinio(db: AsyncSession, patrocinio: PatrocinioCreate):
     except Exception as e:
         await db.rollback()  
         raise e  
-
 
 
 async def get_patrocinio(db: AsyncSession, patrocinio_id: int):

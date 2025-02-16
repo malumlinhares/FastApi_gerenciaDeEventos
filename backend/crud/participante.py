@@ -5,31 +5,18 @@ from backend.schemas.participante import ParticipanteCreate
 from backend.models.participante import TipoParticipante
 from sqlalchemy.orm import joinedload
 from sqlalchemy.future import select
-from backend.models.certificado import Certificado  
 from sqlalchemy import text
 # from sqlalchemy.orm import joinedload
+from backend.schemas.endereco import EnderecoCreate
+from backend.models.endereco import Endereco
+
 
 async def get_all_participantes(db: AsyncSession):
-    result = await db.execute(select(Participante))  # Executa a consulta para buscar todos os autenticadores
+    result = await db.execute(select(Participante))  
     return result.scalars().all() 
-
-# async def create_participante(db: AsyncSession, participante: ParticipanteCreate):
-#     db_participante = Participante(
-#         nome=participante.nome,
-#         email=participante.email,
-#         tipo=TipoParticipante(participante.tipo),
-#         anuidade = participante.anuidade,
-#         elegivel_upgrade = participante.elegivel_upgrade
-
-#     )
-#     db.add(db_participante)
-#     await db.commit()
-#     await db.refresh(db_participante)
-#     return db_participante
 
 async def create_participante(db: AsyncSession, participante: ParticipanteCreate):
     try:
-        # Validações adicionais antes de criar o participante
         if participante.tipo == TipoParticipante.vip:
             if not participante.anuidade or participante.anuidade <= 0:
                 raise ValueError("Anuidade deve ser maior que zero para participantes do tipo 'vip'.")
@@ -73,11 +60,11 @@ async def create_participante(db: AsyncSession, participante: ParticipanteCreate
         }
 
     except ValueError as e:
-        raise e  # Levanta a exceção de validação se algo estiver errado
+        raise e  
 
     except Exception as e:
-        await db.rollback()  # Reverte a transação em caso de erro
-        raise e  # Levanta a exceção para ser tratada em nível superior
+        await db.rollback()  
+        raise e  
 
 
 async def get_participante(db: AsyncSession, participante_id: int):
@@ -117,28 +104,13 @@ async def bulk_create_participante(db: AsyncSession, participantes: list[Partici
     db_participantes = [Participante(**participante.model_dump()) for participante in participantes]
     db.add_all(db_participantes)
     await db.commit()
-    # Atualiza os objetos para garantir dados consistentes
     for participante in db_participantes:
         await db.refresh(participante)
     return db_participantes
 
 
-# async def get_participantes_com_certificados_inner_join(db: AsyncSession):
-#     """
-#     Retorna todos os participantes que possuem certificados (INNER JOIN).
-#     """
-#     query = (
-#         select(Participante)
-#         .join(Certificado, Participante.id == Certificado.participante_id)
-#         .options(joinedload(Participante.certificado))
-#     )
-#     result = await db.execute(query)
-#     return result.scalars().unique().all()
-
+#retorna apenas os participantes com certificados 
 async def get_participantes_com_certificados_inner_join(db: AsyncSession):
-    """
-    Retorna todos os participantes que possuem certificados (INNER JOIN).
-    """
     query = text("""
         SELECT p.*
         FROM participantes p
@@ -149,11 +121,8 @@ async def get_participantes_com_certificados_inner_join(db: AsyncSession):
     participantes = result.fetchall()  
     return participantes
 
-
+#retorna os participantes com e sem certificados 
 async def get_participantes_com_certificados_left_join(db: AsyncSession):
-    """
-    Retorna todos os participantes, incluindo aqueles sem certificados (LEFT JOIN).
-    """
     query = text("""
         SELECT p.*
         FROM participantes p
@@ -164,40 +133,30 @@ async def get_participantes_com_certificados_left_join(db: AsyncSession):
     participantes = result.fetchall()  
     return participantes
 
+# retorna os participantes ordenados pelo nome
 async def get_participantes_ordenados(db: AsyncSession, ordem: str):
-    """
-    Retorna todos os participantes ordenados pelo nome.
-    A ordenação pode ser 'ASC' para ascendente ou 'DESC' para descendente.
-    """
     if ordem.upper() not in {"ASC", "DESC"}:
         raise ValueError("A ordenação deve ser 'ASC' ou 'DESC'.")
-
     query = text("""
         SELECT p.id, p.nome, p.email, p.tipo, p.anuidade, p.elegivel_upgrade, p.endereco_id
         FROM participantes p
         ORDER BY p.nome """ + ordem.upper())
-
     result = await db.execute(query)
     participantes = result.fetchall()
     return participantes
 
-from backend.schemas.endereco import EnderecoCreate
-from backend.models.endereco import Endereco
 
 async def create_participante_com_endereco(db: AsyncSession, participante: ParticipanteCreate, endereco: EnderecoCreate):
     endereco_db = Endereco(**endereco.dict())
     db.add(endereco_db)
-    await db.commit() 
+    await db.commit()
     await db.refresh(endereco_db)  
-
-    participante_dict = participante.dict(exclude_unset=True)
-    participante_dict['endereco_id'] = endereco_db.id  
-
+    participante_dict = participante.dict()  
+    participante_dict["endereco_id"] = endereco_db.id  
     participante_db = Participante(**participante_dict)
     db.add(participante_db)
     await db.commit()
     await db.refresh(participante_db)
 
     return participante_db
-
 

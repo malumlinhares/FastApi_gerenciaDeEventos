@@ -5,18 +5,8 @@ from backend.schemas.autenticador import AutenticadorCreate
 from sqlalchemy import text
 
 async def get_all_autenticadores(db: AsyncSession):
-    result = await db.execute(select(Autenticador))  # Executa a consulta para buscar todos os autenticadores
+    result = await db.execute(select(Autenticador))  
     return result.scalars().all() 
-
-#usando a biblioteca
-# async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate):
-#     db_autenticador = Autenticador(orgao=autenticador.orgao)
-#     db.add(db_autenticador)
-#     await db.commit()
-#     await db.refresh(db_autenticador)
-#     return db_autenticador
-
-#usando sqlnativo:
 
 async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate):
     try:
@@ -25,7 +15,6 @@ async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate
             VALUES (:chave_autenticacao, :orgao, :status, :data_expiracao)
             RETURNING id, chave_autenticacao, orgao, status, data_expiracao
         """)
-
         result = await db.execute(
             query,
             {
@@ -35,7 +24,6 @@ async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate
                 "data_expiracao": autenticador.data_expiracao,
             }
         )
-
         row = result.fetchone()  
         await db.commit()  
         return {
@@ -49,7 +37,6 @@ async def create_autenticador(db: AsyncSession, autenticador: AutenticadorCreate
     except Exception as e:
         await db.rollback()  
         raise e  
-
 
 async def get_autenticador(db: AsyncSession, autenticador_id: int):
     result = await db.execute(select(Autenticador).filter(Autenticador.id == autenticador_id))
@@ -76,7 +63,6 @@ async def delete_autenticador(db: AsyncSession, autenticador_id: int):
     await db.delete(db_autenticador)
     await db.commit()
     return db_autenticador
-
 
 async def bulk_create_autenticador(db: AsyncSession, autenticadores: list[AutenticadorCreate]):
     db_autenticadores = [Autenticador(**autenticador.model_dump()) for autenticador in autenticadores]

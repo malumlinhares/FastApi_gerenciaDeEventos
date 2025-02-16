@@ -6,23 +6,10 @@ from sqlalchemy import text
 
 
 async def get_all_enderecos(db: AsyncSession):
-    result = await db.execute(select(Endereco))  # Executa a consulta para buscar todos os autenticadores
+    result = await db.execute(select(Endereco))  
     return result.scalars().all()  
 
-#usando funcao pronta
-# async def create_endereco(db: AsyncSession, endereco: EnderecoCreate):
-#     db_endereco = Endereco(
-#         rua=endereco.rua,
-#         cep=endereco.cep,
-#         numero=endereco.numero,
-#         participante_id=endereco.participante_id
-#     )
-#     db.add(db_endereco)
-#     await db.commit()
-#     await db.refresh(db_endereco)
-#     return db_endereco
 
-# usando sql nativo
 async def create_endereco(db: AsyncSession, endereco: EnderecoCreate):
     try:
         query = text("""
@@ -34,8 +21,8 @@ async def create_endereco(db: AsyncSession, endereco: EnderecoCreate):
             "rua": endereco.rua,
             "cep": endereco.cep,
             "numero": endereco.numero,
-            "complemento": endereco.complemento if endereco.complemento else None,  # Opcional
-            "ponto_de_referencia": endereco.ponto_de_referencia if endereco.ponto_de_referencia else None  # Opcional
+            "complemento": endereco.complemento if endereco.complemento else None,  
+            "ponto_de_referencia": endereco.ponto_de_referencia if endereco.ponto_de_referencia else None  
         }
 
         result = await db.execute(query, params)

@@ -11,7 +11,7 @@ class ParticipanteBase(BaseModel):
     email: str
     tipo: TipoParticipante 
     elegivel_upgrade: Optional[int] = None
-    endereco_id: int
+    # endereco_id: int
     anuidade: Optional[int] = None
     telefone: Optional[str] = None  
     responsavel: Optional[str] = None  

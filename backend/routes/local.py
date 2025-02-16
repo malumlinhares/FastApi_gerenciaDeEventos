@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[LocalResponse])
 async def list_autenticadores(db: AsyncSession = Depends(get_db)):
-    autenticadores = await get_all_locais(db=db)  # Função que retorna todos os autenticadores
+    autenticadores = await get_all_locais(db=db) 
     return autenticadores
 
 

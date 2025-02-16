@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[PatrocinadorResponse])
 async def list_autenticadores(db: AsyncSession = Depends(get_db)):
-    autenticadores = await get_all_patrocinadores(db=db)  # Função que retorna todos os autenticadores
+    autenticadores = await get_all_patrocinadores(db=db)  
     return autenticadores
 
 @router.post("/", response_model=PatrocinadorResponse)
@@ -69,16 +69,10 @@ async def search_patrocinador_api(nome_substring: str, db: AsyncSession = Depend
 
 @router.get("/patrocinadores/com-valores-acima-da-media", response_model=List[PatrocinadorResponse])
 async def read_patrocinadores_com_valores_acima_da_media(db: AsyncSession = Depends(get_db)):
-    """
-    Retorna todos os patrocinadores que têm patrocínios com valor superior à média dos seus próprios patrocínios.
-    """
     return await get_patrocinadores_com_valores_acima_da_media(db)
 
 
 @router.post("/gatilho/criar-notificacao-patrocinador-privado")
 async def create_gatilho_notificacao_patrocinador_privado(db: AsyncSession = Depends(get_db)):
-    """
-    Cria um gatilho para notificar sobre a inserção de patrocinadores do tipo 'privado'.
-    """
     await criar_gatilho_notificacao_patrocinador_privado(db)
     return {"message": "Gatilho criado com sucesso!"}

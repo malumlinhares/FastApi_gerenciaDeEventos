@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[ParticipanteResponse])
 async def list_autenticadores(db: AsyncSession = Depends(get_db)):
-    autenticadores = await get_all_participantes(db=db)  # Função que retorna todos os autenticadores
+    autenticadores = await get_all_participantes(db=db)  
     return autenticadores
 
 @router.post("/", response_model=ParticipanteResponse)
@@ -57,16 +57,12 @@ async def bulk_create_participantes(
     
 @router.get("/participantes/com-certificados-inner", response_model=List[ParticipanteResponse])
 async def read_participantes_com_certificados_inner(db: AsyncSession = Depends(get_db)):
-    """
-    Retorna todos os participantes que possuem certificados (INNER JOIN).
-    """
+
     return await get_participantes_com_certificados_inner_join(db)
 
 @router.get("/participantes/com-certificados-left", response_model=List[ParticipanteResponse])
 async def read_participantes_com_certificados_left(db: AsyncSession = Depends(get_db)):
-    """
-    Retorna todos os participantes, incluindo aqueles sem certificados (LEFT JOIN).
-    """
+
     return await get_participantes_com_certificados_left_join(db)
 
 @router.get("/participantes/ordenados", response_model=List[ParticipanteResponse])
@@ -80,7 +76,4 @@ async def create_participante_com_endereco_route(
     endereco: EnderecoCreate,
     db: AsyncSession = Depends(get_db)
 ):
-    """
-    Cria um participante com um endereço associado.
-    """
     return await create_participante_com_endereco(db, participante, endereco)

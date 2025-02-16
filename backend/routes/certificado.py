@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[CertificadoResponse])
 async def list_certificados(db: AsyncSession = Depends(get_db)):
-    autenticadores = await get_all_certificados(db=db)  # Função que retorna todos os autenticadores
+    autenticadores = await get_all_certificados(db=db) 
     return autenticadores
 
 @router.post("/", response_model=CertificadoResponse)
@@ -57,8 +57,6 @@ async def bulk_create_certificados(
 
 @router.get("/certificados/contagem-por-participante", response_model=List[Dict[str, int]])
 async def read_certificados_contagem_por_participante(db: AsyncSession = Depends(get_db)):
-    """
-    Retorna a contagem de certificados por participante.
-    """
+
     result = await count_certificados_por_participante(db)
     return [{"participante_id": row.participante_id, "total_certificados": row.total_certificados} for row in result]

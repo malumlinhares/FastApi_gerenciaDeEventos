@@ -3,24 +3,10 @@ from backend.models.patrocinador import Patrocinador, TipoPatrocinador
 from backend.schemas.patrocinador import PatrocinadorCreate
 from sqlalchemy.future import select
 from sqlalchemy import text
+
 async def get_all_patrocinadores(db: AsyncSession):
-    result = await db.execute(select(Patrocinador))  # Executa a consulta para buscar todos os autenticadores
+    result = await db.execute(select(Patrocinador)) 
     return result.scalars().all() 
-
-
-# Função para criar patrocinador
-# async def create_patrocinador(db: AsyncSession, patrocinador: PatrocinadorCreate):
-#     db_patrocinador = Patrocinador(
-#         nome=patrocinador.nome,
-#         email=patrocinador.email,
-#         tipo=TipoPatrocinador(patrocinador.tipo),  # Convertendo para o tipo Enum
-#         orgao_responsavel=patrocinador.orgao_responsavel,
-#         responsavel_comercial=patrocinador.responsavel_comercial,
-#     )
-#     db.add(db_patrocinador)
-#     await db.commit()
-#     await db.refresh(db_patrocinador)
-#     return db_patrocinador
 
 async def create_patrocinador(db: AsyncSession, patrocinador: PatrocinadorCreate):
     try:
@@ -104,15 +90,7 @@ async def bulk_create_patrocinador(db: AsyncSession, patrocinadores: list[Patroc
         await db.refresh(patrocinador)
     return db_patrocinadores
 
-
-# Função para buscar patrocinadores por substring no nome
-# async def search_patrocinador_by_name(db: AsyncSession, nome_substring: str):
-#     result = await db.execute(
-#         select(Patrocinador).filter(Patrocinador.nome.ilike(f"%{nome_substring}%"))
-#     )
-#     patrocinadores = result.scalars().all()
-#     return patrocinadores
-
+# pesquisar patrocinador por nome - substring
 async def search_patrocinador_by_name(db: AsyncSession, nome_substring: str):
     query = text("""
         SELECT * 
@@ -123,10 +101,8 @@ async def search_patrocinador_by_name(db: AsyncSession, nome_substring: str):
     patrocinadores = result.fetchall()
     return patrocinadores
 
+#retorna patrociandores com valores acima da media 
 async def get_patrocinadores_com_valores_acima_da_media(db: AsyncSession):
-    """
-    Retorna todos os patrocinadores que têm patrocínios com valor superior à média dos seus próprios patrocínios.
-    """
     query = text("""
     SELECT p.id, p.nome, p.email, p.tipo
     FROM patrocinadores p
@@ -141,16 +117,12 @@ async def get_patrocinadores_com_valores_acima_da_media(db: AsyncSession):
         )
     )
 """)
-
     result = await db.execute(query)
     patrocinadores = result.fetchall()
     return patrocinadores
 
-
+# notificação pra patrocinadores do tipo privado 
 async def criar_gatilho_notificacao_patrocinador_privado(db: AsyncSession):
-    """
-    Cria um gatilho para notificar sobre a inserção de patrocinadores do tipo 'privado'.
-    """
     query = text("""
         DO $$ 
         BEGIN
