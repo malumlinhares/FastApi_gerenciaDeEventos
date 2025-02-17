@@ -124,3 +124,38 @@ async def get_patrocinadores_com_valores_acima_da_media(db: AsyncSession):
 
 
 # notificação pra patrocinadores do tipo privado 
+async def criar_gatilho_notificacao_patrocinador_privado(db: AsyncSession):
+    try:
+        await db.execute(text("DROP TRIGGER IF EXISTS trg_notificacao_patrocinador_privado ON patrocinadores;"))
+        query_function = text("""
+            CREATE OR REPLACE FUNCTION inserir_log_novo_patrocinador()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                IF NEW.tipo = 'privado' THEN
+                    INSERT INTO logs (mensagem, data_criacao, event_details)
+                    VALUES (
+                        'Novo patrocinador privado: ' || NEW.nome || ' (ID: ' || NEW.id || ')',  -- mensagem
+                        CURRENT_TIMESTAMP,                                                      -- data_criacao
+                        'Detalhes do evento não disponíveis'                                     -- event_details
+                    );
+                END IF;
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+        """)
+        await db.execute(query_function)
+
+        query_trigger = text("""
+            CREATE TRIGGER trg_notificacao_patrocinador_privado
+            AFTER INSERT ON patrocinadores
+            FOR EACH ROW
+            EXECUTE FUNCTION inserir_log_novo_patrocinador();
+        """)
+        await db.execute(query_trigger)
+        await db.commit()
+
+    except Exception as e:
+        await db.rollback()  
+        raise e
+
+
