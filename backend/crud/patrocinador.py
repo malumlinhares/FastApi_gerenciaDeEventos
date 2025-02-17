@@ -104,54 +104,23 @@ async def search_patrocinador_by_name(db: AsyncSession, nome_substring: str):
 #retorna patrociandores com valores acima da media 
 async def get_patrocinadores_com_valores_acima_da_media(db: AsyncSession):
     query = text("""
-    SELECT p.id, p.nome, p.email, p.tipo
-    FROM patrocinadores p
-    WHERE p.id = ANY (
-        SELECT pt.patrocinador_id
-        FROM patrocinios pt
-        JOIN eventos e ON e.id = pt.evento_id
-        WHERE pt.valor > (
-            SELECT AVG(pt2.valor)
-            FROM patrocinios pt2
-            WHERE pt2.patrocinador_id = pt.patrocinador_id
+        SELECT p.id, p.nome, p.email, p.tipo, p.orgao_responsavel, p.responsavel_comercial, p.telefone, p.nome_responsavel
+        FROM patrocinadores p
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM patrocinios pt
+            WHERE pt.patrocinador_id = p.id
+            AND pt.valor <= ALL (
+                SELECT AVG(pt2.valor)
+                FROM patrocinios pt2
+                GROUP BY pt2.patrocinador_id
+            )
         )
-    )
-""")
+    """)
     result = await db.execute(query)
     patrocinadores = result.fetchall()
+
     return patrocinadores
 
+
 # notificação pra patrocinadores do tipo privado 
-async def criar_gatilho_notificacao_patrocinador_privado(db: AsyncSession):
-    query = text("""
-        DO $$ 
-        BEGIN
-            -- Criar a função apenas se ainda não existir
-            IF NOT EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'notificacao_patrocinador_privado') THEN
-                CREATE FUNCTION notificacao_patrocinador_privado()
-                RETURNS TRIGGER AS $$
-                BEGIN
-                    IF NEW.tipo = 'privado' THEN
-                        INSERT INTO logs (mensagem, data_criacao)
-                        VALUES ('Novo patrocinador privado inserido (ID: ' || NEW.id || '): ' || NEW.nome, CURRENT_TIMESTAMP);
-                    END IF;
-                    RETURN NEW;
-                END;
-                $$ LANGUAGE plpgsql;
-            END IF;
-
-            -- Remover o gatilho caso já exista para evitar erro
-            IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_notificacao_patrocinador_privado') THEN
-                DROP TRIGGER trg_notificacao_patrocinador_privado ON patrocinadores;
-            END IF;
-
-            -- Criar o gatilho novamente
-            CREATE TRIGGER trg_notificacao_patrocinador_privado
-            AFTER INSERT ON patrocinadores
-            FOR EACH ROW
-            EXECUTE FUNCTION notificacao_patrocinador_privado();
-        END $$;
-    """)
-
-    await db.execute(query)
-    await db.commit()

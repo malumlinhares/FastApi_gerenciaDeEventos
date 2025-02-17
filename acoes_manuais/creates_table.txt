@@ -64,20 +64,25 @@ CREATE TABLE eventos (
 );
 
 CREATE TABLE participantes (
-        id SERIAL NOT NULL, 
-        nome VARCHAR NOT NULL, 
-        email VARCHAR NOT NULL, 
-        tipo VARCHAR NOT NULL, 
-        anuidade INTEGER, 
-        elegivel_upgrade INTEGER NOT NULL, 
-        endereco_id INTEGER, 
-        telefone VARCHAR, 
-        responsavel VARCHAR, 
-        PRIMARY KEY (id), 
-        UNIQUE (email), 
-        UNIQUE (endereco_id), 
-        FOREIGN KEY(endereco_id) REFERENCES enderecos (id) ON DELETE CASCADE
+    id SERIAL NOT NULL, 
+    nome VARCHAR NOT NULL, 
+    email VARCHAR NOT NULL UNIQUE, 
+    tipo VARCHAR NOT NULL CHECK (tipo IN ('vip', 'padrao')), 
+    anuidade INTEGER CHECK (
+        (tipo = 'vip' AND anuidade IS NOT NULL) OR 
+        (tipo = 'padrao' AND anuidade = 0)
+    ), 
+    elegivel_upgrade INTEGER NOT NULL CHECK (
+        (tipo = 'padrao' AND elegivel_upgrade = 1) OR 
+        (tipo = 'vip')
+    ), 
+    endereco_id INTEGER UNIQUE, 
+    telefone VARCHAR, 
+    responsavel VARCHAR, 
+    PRIMARY KEY (id), 
+    FOREIGN KEY (endereco_id) REFERENCES enderecos (id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE certificados (
     id SERIAL NOT NULL, 

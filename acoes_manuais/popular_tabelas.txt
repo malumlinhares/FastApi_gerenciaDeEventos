@@ -60,16 +60,17 @@ INSERT INTO enderecos (rua, cep, numero, complemento, ponto_de_referencia) VALUE
 ('Rua Amazonas', '69010-020', 550, NULL, 'Perto do Teatro Amazonas');
 
 INSERT INTO participantes (nome, email, tipo, anuidade, elegivel_upgrade, endereco_id, telefone, responsavel) VALUES
-('Lucas Souza', 'lucas@email.com', 'Estudante', 100, 1, 1, '11998877665', 'José Souza'),
-('Mariana Lima', 'mariana@email.com', 'Profissional', 200, 0, 2, '21998877665', 'Paula Lima'),
-('Carlos Oliveira', 'carlos@email.com', 'Estudante', 100, 1, 3, '31998877665', 'Maria Oliveira'),
-('Ana Mendes', 'ana@email.com', 'Profissional', 200, 0, 4, '85998877665', 'Ricardo Mendes'),
-('Pedro Henrique', 'pedro@email.com', 'Estudante', 100, 1, 5, '81998877665', 'Marcos Henrique'),
-('Juliana Alves', 'juliana@email.com', 'Profissional', 200, 0, 6, '51998877665', 'Clara Alves'),
-('Fernando Castro', 'fernando@email.com', 'Estudante', 100, 1, 7, '41998877665', 'Patrícia Castro'),
-('Beatriz Fernandes', 'beatriz@email.com', 'Profissional', 200, 0, 8, '61998877665', 'Rodrigo Fernandes'),
-('Thiago Nunes', 'thiago@email.com', 'Estudante', 100, 1, 9, '71998877665', 'Helena Nunes'),
-('Camila Rocha', 'camila@email.com', 'Profissional', 200, 0, 10, '92998877665', 'Fábio Rocha');
+('Alice Silva', 'alice@email.com', 'vip', 1200, 0, 1, '11999990001', 'Carlos Souza'),
+('Bruno Costa', 'bruno@email.com', 'padrao', 0, 1, 2, '11999990002', 'Fernanda Lima'),
+('Carla Mendes', 'carla@email.com', 'vip', 1500, 0, 3, '11999990003', 'Ricardo Alves'),
+('Daniel Ferreira', 'daniel@email.com', 'padrao', 0, 1, 4, '11999990004', 'Mariana Duarte'),
+('Eduardo Santos', 'eduardo@email.com', 'vip', 2000, 0, 5, '11999990005', 'Juliana Rocha'),
+('Fernanda Lima', 'fernanda@email.com', 'padrao', 0, 1, 6, '11999990006', 'Roberto Nunes'),
+('Gabriel Oliveira', 'gabriel@email.com', 'vip', 1750, 0, 7, '11999990007', 'Amanda Martins'),
+('Helena Souza', 'helena@email.com', 'padrao', 0, 1, 8, '11999990008', 'Thiago Pereira'),
+('Igor Mendes', 'igor@email.com', 'vip', 1300, 0, 9, '11999990009', 'Vanessa Lopes'),
+('Juliana Rocha', 'juliana@email.com', 'padrao', 0, 1, 10, '11999990010', 'Felipe Cardoso');
+
 
 
 INSERT INTO patrocinios (valor, descricao, evento_id, patrocinador_id, status, observacao) 
