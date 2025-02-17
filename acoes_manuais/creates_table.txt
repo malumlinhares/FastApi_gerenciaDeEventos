@@ -123,3 +123,10 @@ CREATE TABLE patrocinios (
         FOREIGN KEY(evento_id) REFERENCES eventos (id) ON DELETE CASCADE, 
         FOREIGN KEY(patrocinador_id) REFERENCES patrocinadores (id) ON DELETE CASCADE
 );
+CREATE TABLE logs (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    data_criacao TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    mensagem TEXT NOT NULL,
+    event_details TEXT
+);
